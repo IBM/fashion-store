@@ -1,0 +1,21 @@
+{
+	"name": "nodeapp",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "node app.js"
+	},
+	"dependencies": {
+		"express": "4.13.x",
+		"cfenv": "1.0.x",
+		"path": "0.12.7",
+		"request": "2.81.0",
+		"body-parser": "1.17.2",
+		"url": "0.11.0",
+		"express-session": "1.15.5"
+	},
+	"repository": {},
+	"engines": {
+		"node": "4.2.x"
+	}
+}

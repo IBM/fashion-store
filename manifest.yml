@@ -1,0 +1,4 @@
+applications:
+- name: shoe-store-website
+  memory: 128M
+  buildpack: sdk-for-nodejs
