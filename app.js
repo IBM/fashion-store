@@ -10,7 +10,7 @@ var session = require('express-session');
 
 
 
-var gateway_url = 'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+var gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -69,13 +69,18 @@ app.get('/gateway/open-banking/banks', function (req, res) {
 // payment initiations step 2
 app.post('/gateway/open-banking/payments', function (req, res) {
   ssn = req.session;
+  
   var tempData={};
   var request_url = gateway_url + 'payments';
+
   console.log(request_url);
+  
   var bodyTemp = JSON.stringify(req.body);
   bodyTemp = JSON.parse(bodyTemp);
+  
   var bankId = req.header("bankID");
   ssn.bankId = bankId;
+  
   var options = {
     "url": request_url,
     "headers": {
@@ -93,30 +98,42 @@ app.post('/gateway/open-banking/payments', function (req, res) {
     "body": bodyTemp,
     json: true
   };
+  
   console.log('2. Initiating the Payment..');
   console.log(options);
+  
   request.post(options, function (error, response, body) {
     console.log('error:', error); // Print the error if one occurred 
     console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
     console.log('body:', body); // print the body
+    
     tempData.Data = response.body.Data;
     tempData.Risk = response.body.Risk;
+    
     ssn.payment_data = JSON.stringify(tempData);
-    response.body.Links.next = response.body.Links.next.replace('redirect_uri=https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
+    
+    //response.body.Links.next = response.body.Links.next.replace('redirect_uri=http://localhost:8080/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
+    response.body.Links.next = 'http://localhost:8080/paymentcomplete.html';
+    
     var token_url = response.body.Links.last.split('?')[0];
     ssn.token_url = token_url;
+    
     var next_url = response.body.Links.next;
     //res.send(response.body);
+    
     res.send(body);
   });
 });
 
-
-
+console.log("COMPLETE")
+app.get('/redirect_location', function (req, res) {
+  res.sendFile(path.resolve('public/paymentcomplete.html'));
+});
 
 
 
 // Step 4 (and 5) (how to be sure this comes from the auth server?)
+/*
 app.get('/redirect_location', function (req, res) {
   // get the oauth code
   var code = req.query.code;
@@ -138,6 +155,7 @@ app.get('/redirect_location', function (req, res) {
       code: code,
     }
   };
+
   // step 4
   console.log('4. Swapping the token for the authorizaion code..');
   console.log(options);
@@ -182,6 +200,7 @@ app.get('/redirect_location', function (req, res) {
   });
   
 });
+*/
 
 
 // the cfenv library will not reflect a change to the port in it's url
