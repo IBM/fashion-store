@@ -1,4 +1,3 @@
-
 // This application uses express as its web server
 // for more info, see: http://expressjs.com
 var express = require('express');
@@ -8,9 +7,15 @@ var bodyParser = require('body-parser');
 const url = require("url");
 var session = require('express-session');
 
-
+var port = "8080";
 
 var gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+
+if (process.env.GATEWAYURL)
+{
+  gateway_url = process.env.GATEWAYURL;
+  console.log(" gateway: %s", gateway_url);
+}
 
 // cfenv provides access to your Cloud Foundry environment
 // for more info, see: https://www.npmjs.com/package/cfenv
@@ -50,7 +55,6 @@ app.get('/gateway/open-banking/banks', function (req, res) {
   var options = {
     "url": request_url,
     "headers": {
-      "merchantid": "/",
       "content-type": "application/json",
       "accept": "application/json"
     }
@@ -113,24 +117,18 @@ app.post('/gateway/open-banking/payments', function (req, res) {
     ssn.payment_data = JSON.stringify(tempData);
     
     //response.body.Links.next = response.body.Links.next.replace('redirect_uri=http://localhost:8080/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
-    response.body.Links.next = 'http://localhost:8080/paymentcomplete.html';
+    response.body.Links.next = appEnv.url + '/paymentcomplete.html';
+    //response.body.Links.next = appEnv.url + '/redirect_location.html';
     
-    var token_url = response.body.Links.last.split('?')[0];
-    ssn.token_url = token_url;
+    //var token_url = response.body.Links.last.split('?')[0];
+    //ssn.token_url = token_url;
     
-    var next_url = response.body.Links.next;
+    //var next_url = response.body.Links.next;
     //res.send(response.body);
     
     res.send(body);
   });
 });
-
-console.log("COMPLETE")
-app.get('/redirect_location', function (req, res) {
-  res.sendFile(path.resolve('public/paymentcomplete.html'));
-});
-
-
 
 // Step 4 (and 5) (how to be sure this comes from the auth server?)
 /*
@@ -201,13 +199,45 @@ app.get('/redirect_location', function (req, res) {
   
 });
 */
+app.get('/redirect_location', function (req, res) {
+  var options = {
+    method: 'POST',
+    url: gateway_url + 'payment-submissions',
+    headers:
+    {
+      bankid: ssn.bankId,
+      'x-jws-signature': '1',
+      'x-idempotency-key': '1',
+      'x-fapi-interaction-id': '1',
+      'x-fapi-financial-id': '1',
+      'x-fapi-customer-last-logged-time': '1',
+      'x-fapi-customer-ip-address': '1',
+      'content-type': 'application/json',
+      accept: 'application/json',
+      authorization: 'Bearer ' + 'accesstokenplaceholder'
+    },
+    body: JSON.parse(ssn.payment_data),
+    json: true
+  };
 
+  console.log('5. Submitting the payment..');
+  console.log(options);
+
+  request(options, function (error, response, body) {
+    console.log('error:', error); // Print the error if one occurred 
+    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
+    console.log('body:', body); // print the body
+
+    // send the completed file
+    res.redirect('/paymentcomplete.html');
+  });
+});
 
 // the cfenv library will not reflect a change to the port in it's url
 // so hack in the correct values - ok while it works...
 if (appEnv.isLocal){
-  appEnv.url = appEnv.url.replace(appEnv.port, '8080');
-  appEnv.port = 8080;
+  appEnv.url = appEnv.url.replace(appEnv.port, port);
+  appEnv.port = port;
 }
 
 console.log(appEnv.port);
