@@ -8,12 +8,11 @@ const url = require("url");
 var session = require('express-session');
 
 var port = "8080";
-
-var gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+var gateway_url = 'http://localhost:8400/open-banking'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
 
 if (process.env.GATEWAYURL)
 {
-  gateway_url = process.env.GATEWAYURL;
+  gateway_url = process.env.GATEWAYURL + '/';
   console.log(" gateway: %s", gateway_url);
 }
 
@@ -104,7 +103,7 @@ app.post('/gateway/open-banking/payments', function (req, res) {
   };
   
   console.log('2. Initiating the Payment..');
-  console.log(options);
+  console.log(JSON.stringify(options));
   
   request.post(options, function (error, response, body) {
     console.log('error:', error); // Print the error if one occurred 
@@ -221,7 +220,7 @@ app.get('/redirect_location', function (req, res) {
   };
 
   console.log('5. Submitting the payment..');
-  console.log(options);
+  console.log(JSON.stringify(options));
 
   request(options, function (error, response, body) {
     console.log('error:', error); // Print the error if one occurred 

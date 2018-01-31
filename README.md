@@ -12,9 +12,17 @@ also, the api-endpoint-controller component default port is 8400, if you changed
 in the /bin folder run the build.sh
 
 # Run
-To run you can simply use the ./run.sh GATEWAYURL
+There is a run.sh which will call build.sh & start the container for you.  run.sh has a few options to help you out.
+
+You can now set the external port & point to a specific api gateway url for your own development.  You can also do nothing and let the defaults take hold.
+
+Default port is 8080 & the configfile is http://localhost:8400/open-banking
+
+Usage: ./run.sh -e 80 -g http://myserver:8400/open-banking
 
 Where GATEWAYURL is the apicontroller.  It must be in the form of http://9.30.202.303:8400/open-banking/
+
+Note: You don't need the / at the end anymore.
 
 Just make sure the shoe container can reach the apicontroller container.
 

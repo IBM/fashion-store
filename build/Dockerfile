@@ -1,5 +1,8 @@
 FROM node:carbon
 
+ARG PORT
+RUN echo ${PORT}
+
 # Create app directory
 WORKDIR /usr/src/app
 
@@ -15,5 +18,7 @@ RUN npm install
 # Bundle app source
 COPY ./src/ .
 
-EXPOSE 8080
+#EXPOSE 8080
+EXPOSE ${PORT}
+
 CMD [ "npm", "start" ]
