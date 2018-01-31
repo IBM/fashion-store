@@ -14,7 +14,7 @@ in the /bin folder run the build.sh
 # Run
 To run you can simply use the ./run.sh GATEWAYURL
 
-Where GATEWAYURL is the apicontroller.  It must be in the form of http://9.30.202.303:8400/open-banking
+Where GATEWAYURL is the apicontroller.  It must be in the form of http://9.30.202.303:8400/open-banking/
 
 Just make sure the shoe container can reach the apicontroller container.
 
