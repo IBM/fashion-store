@@ -123,8 +123,8 @@ app.post('/gateway/open-banking/payments', function (req, res) {
     ssn.payment_data = JSON.stringify(tempData);
     
     //response.body.Links.next = response.body.Links.next.replace('redirect_uri=http://localhost:8080/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
-    response.body.Links.next = external_url + 'paymentcomplete.html';
-    //response.body.Links.next = appEnv.url + '/redirect_location.html';
+    //response.body.Links.next = external_url + 'paymentcomplete.html';
+    response.body.Links.next = appEnv.url + '/redirect_location.html';
     
     //var token_url = response.body.Links.last.split('?')[0];
     //ssn.token_url = token_url;
