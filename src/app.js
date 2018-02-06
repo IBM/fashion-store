@@ -8,7 +8,7 @@ const url = require("url");
 var session = require('express-session');
 
 var port = "8080";
-var gateway_url = 'http://localhost:8400/open-banking'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+var gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
 
 if (process.env.GATEWAYURL)
 {
