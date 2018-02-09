@@ -8,12 +8,19 @@ const url = require("url");
 var session = require('express-session');
 
 var port = "8080";
-var gateway_url = 'http://localhost:8400/open-banking'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+var gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+var external_url = 'http://localhost:8080/';
 
 if (process.env.GATEWAYURL)
 {
   gateway_url = process.env.GATEWAYURL + '/';
   console.log(" gateway: %s", gateway_url);
+}
+
+if (process.env.EXTERNALURL)
+{
+  external_url = process.env.EXTERNALURL + '/';
+  console.log("external url: %s", external_url);
 }
 
 // cfenv provides access to your Cloud Foundry environment
@@ -116,8 +123,8 @@ app.post('/gateway/open-banking/payments', function (req, res) {
     ssn.payment_data = JSON.stringify(tempData);
     
     //response.body.Links.next = response.body.Links.next.replace('redirect_uri=http://localhost:8080/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
-    response.body.Links.next = appEnv.url + '/paymentcomplete.html';
-    //response.body.Links.next = appEnv.url + '/redirect_location.html';
+    //response.body.Links.next = external_url + 'paymentcomplete.html';
+    response.body.Links.next = external_url + 'redirect_location';
     
     //var token_url = response.body.Links.last.split('?')[0];
     //ssn.token_url = token_url;
