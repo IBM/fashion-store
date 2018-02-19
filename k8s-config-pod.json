@@ -21,7 +21,7 @@
       "env": [
         {
           "name": "GATEWAYURL",
-          "value": "http://184.173.1.189:31802/open-banking"
+          "value": "http://184.173.1.189:31273/open-banking"
         },
         {
           "name": "EXTERNALURL",
