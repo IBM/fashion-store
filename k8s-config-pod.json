@@ -3,7 +3,7 @@
   "kind" : "Pod",
   "metadata": {
     "name": "shoe-store-pod",
-    "namespace": "default",
+    "namespace": "banksy-ns",
     "labels": {
       "app": "shoe-store"
     }
@@ -11,8 +11,8 @@
   "spec" : {
     "containers": [{
       "name": "shoe-store",
-      "image": "registry.ng.bluemix.net/banksy-ns/shoe-store:latest",
-      "ports": [{
+      "image": "artemis1.fyre.ibm.com:5000/banksy-ns/shoe-store:latest",
+      "ports": [{ 
           "name": "shoe-store",
           "protocol": "TCP",
           "containerPort": 8080
@@ -21,7 +21,7 @@
       "env": [
         {
           "name": "GATEWAYURL",
-          "value": "http://184.173.1.189:31273/open-banking"
+          "value": "http://184.173.1.189:32132/open-banking"
         },
         {
           "name": "EXTERNALURL",
