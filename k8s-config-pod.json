@@ -21,11 +21,11 @@
       "env": [
         {
           "name": "GATEWAYURL",
-          "value": "http://184.173.1.189:32132/open-banking"
-        },
+          "value": "http://api-controller-svc:8400/open-banking"
+        }, 
         {
           "name": "EXTERNALURL",
-          "value": "http://184.173.1.189:8080"
+          "value": "http://shoe-store-svc:8080"
         }
       ]
     }]
