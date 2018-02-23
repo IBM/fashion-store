@@ -3,7 +3,7 @@
   "kind": "Service",
   "metadata": {
     "name": "shoe-store-svc",
-    "namespace": "default"
+    "namespace": "banksy-ns"
   },
   "spec": {
     "type": "NodePort",
