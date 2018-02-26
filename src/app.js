@@ -1,5 +1,17 @@
 // This application uses express as its web server
 // for more info, see: http://expressjs.com
+
+
+/*
+    [patrick cremin] Notes on payment and oauth process
+    1. user selects bank and hits 'pay now'
+    2. '/gateway/open-banking/payments': payment request is sent to api server and payment data is returned
+    3. oauth flow is started by redirecting the user to the bank login page
+    4. after users enters their credentials, bank redirects back to us '/oauth/callback'
+        a) code is used to get auth token from the bank
+    5. '/redirect_payment_complete' payment is completed and user is redirected to payment complete page
+ */
+
 let express = require( 'express' );
 let path = require( 'path' );
 let request = require( 'request' );
@@ -10,8 +22,11 @@ let fetch = require( 'node-fetch' );
 const { URLSearchParams } = require( 'url' );
 
 let port = "8080";
-let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
-let external_url = 'http://localhost:8080/';
+//let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
+let gateway_url = "http://athena1.fyre.ibm.com:32756/open-banking/"
+//let gateway_url = "http://localhost:8400/open-banking/"
+
+let external_url = 'http://shoe-store-svc:8080/';
 
 if ( process.env.GATEWAYURL )
 {
@@ -40,6 +55,7 @@ app.use( session( {
     resave: true,
     saveUninitialized: true
 } ) );
+
 let ssn;
 
 // for parsing incoming requests
@@ -58,43 +74,6 @@ app.get( '/', function ( req, res )
     res.sendFile( path.resolve( 'public/checkout.html' ) );
 } );
 
-app.get( '/oauth/callback', function ( req, res )
-{
-
-    if ( !req.query.code )
-    {
-        // TODO what is the proper status code?
-        res.send( 500 )
-        return
-    }
-
-    let data = new URLSearchParams();
-    data.append( "code", req.query.code );
-    data.append( 'grant_type', 'authorization_code' );
-    data.append( 'client_id', 'client123456' );
-    data.append( 'client_secret', 'client123456' );
-    data.append( 'redirect_uri', 'http://169.46.60.51:8181/login' );
-
-    // TODO [patrick cremin] make the bank server configurable
-    fetch( "http://localhost:8171/oauth/token",
-        {
-            method: 'POST',
-            body: data
-        } )
-        .then( response =>
-        {
-            return response.json()
-        } )
-        .then( json =>
-        {
-            console.log( JSON.stringify( json ) )
-            // TODO [patrick cremin] save the token so that it can be used for the payment
-        } )
-        .catch( error =>
-        {
-            console.log( error )
-        } )
-} );
 
 // routes to direct to gate way
 // get banks Step1
@@ -172,7 +151,10 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
         //response.body.Links.next = response.body.Links.next.replace('redirect_uri=http://localhost:8080/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
         //response.body.Links.next = external_url + 'paymentcomplete.html';
-        response.body.Links.next = external_url + 'redirect_location';
+        //response.body.Links.next = external_url + 'redirect_location';
+
+        response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser";
+
 
         //let token_url = response.body.Links.last.split('?')[0];
         //ssn.token_url = token_url;
@@ -191,7 +173,7 @@ app.get('/redirect_location', function (req, res) {
   let code = req.query.code;
   // get the url for the bank oauth from the session (could save this somewhere else also)
   let bank_url = ssn.token_url;
-  // swap this for a token  
+  // swap this for a token
   let options = {
     method: 'POST',
     url: ssn.token_url,
@@ -212,8 +194,8 @@ app.get('/redirect_location', function (req, res) {
   console.log('4. Swapping the token for the authorizaion code..');
   console.log(options);
   request(options, function (error, response, body) {
-    console.log('error:', error); // Print the error if one occurred 
-    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
+    console.log('error:', error); // Print the error if one occurred
+    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
     console.log('body:', body); // print the body
 
     // submit the payment - Step 5
@@ -241,8 +223,8 @@ app.get('/redirect_location', function (req, res) {
     console.log('5. Submitting the payment..');
     console.log(options);
     request(options, function (error, response, body) {
-      console.log('error:', error); // Print the error if one occurred 
-      console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received 
+      console.log('error:', error); // Print the error if one occurred
+      console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
       console.log('body:', body); // print the body
 
       // send the completed file
@@ -250,11 +232,63 @@ app.get('/redirect_location', function (req, res) {
     });
 
   });
-  
+
 });
 */
-app.get( '/redirect_location', function ( req, res )
+
+app.get( '/oauth/callback', function ( req, res )
 {
+
+    if ( !req.query.code )
+    {
+        // TODO what is the proper status code?
+        res.send( 500 )
+        return
+    }
+
+    let data = new URLSearchParams();
+    data.append( "code", req.query.code );
+    data.append( 'grant_type', 'authorization_code' );
+    data.append( 'client_id', 'client123456' );
+    data.append( 'client_secret', 'client123456' );
+    data.append( 'redirect_uri', 'http://169.46.60.51:8181/login' );
+
+
+    fetch( "http://169.46.60.51:8181/oauth/token",
+        {
+            method: 'POST',
+            body: data
+        } )
+        .then( response =>
+        {
+            return response.json()
+        } )
+        .then( json =>
+        {
+            console.log( JSON.stringify( json ) )
+            // TODO [patrick cremin] save the token so that it can be used for the payment
+            res.body.Links.next = external_url + 'redirect_payment_complete';
+            res.redirect(external_url + 'redirect_payment_complete')
+        } )
+        .catch( error =>
+        {
+            console.log( error )
+        } )
+} );
+
+app.get( '/redirect_bank_login', function( req, res ) {
+
+    //http://169.46.60.51:8181/loginOauthUser
+
+    // 1. redirect to bank login
+    // 2. get auth token
+    // 3. complete payment
+})
+
+//app.get( '/redirect_location', function ( req, res )
+app.get( '/redirect_payment_complete', function ( req, res )
+{
+    // add bank login here
     let options = {
         method: 'POST',
         url: gateway_url + 'payment-submissions',
