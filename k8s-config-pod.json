@@ -1,0 +1,33 @@
+{
+  "apiVersion" : "v1",
+  "kind" : "Pod",
+  "metadata": {
+    "name": "shoe-store-pod",
+    "namespace": "banksy-ns",
+    "labels": {
+      "app": "shoe-store"
+    }
+  },
+  "spec" : {
+    "containers": [{
+      "name": "shoe-store",
+      "image": "artemis1.fyre.ibm.com:5000/banksy-ns/shoe-store:latest",
+      "ports": [{ 
+          "name": "shoe-store",
+          "protocol": "TCP",
+          "containerPort": 8080
+        }
+      ],
+      "env": [
+        {
+          "name": "GATEWAYURL",
+          "value": "http://api-controller-svc:8400/open-banking"
+        }, 
+        {
+          "name": "EXTERNALURL",
+          "value": "http://shoe-store-svc:8080"
+        }
+      ]
+    }]
+  }
+}
