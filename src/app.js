@@ -24,7 +24,7 @@ const { URLSearchParams } = require( 'url' );
 let port = "8080";
 //let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
 let gateway_url = "http://athena1.fyre.ibm.com:32756/open-banking/"
-//let gateway_url = "http://localhost:8400/open-banking/"
+
 
 let external_url = 'http://shoe-store-svc:8080/';
 
@@ -93,10 +93,17 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
     console.log( options );
     request.get( options, function ( error, response, body )
     {
-        console.log( 'error:', error ); // Print the error if one occurred
-        console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
-        console.log( 'body:', body );
-        res.send( JSON.parse( response.body ) );
+        if(error || response.statusCode !== 200)
+        {
+            console.log( 'error:', error ); // Print the error if one occurred
+            res.send(500)
+        }
+        else
+        {
+            console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
+            console.log( 'body:', body );
+            res.send( JSON.parse( response.body ) );
+        }
     } );
 
 } );
@@ -135,6 +142,9 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         json: true
     };
 
+    let amount = bodyTemp.Data.Initiation.InstructedAmount.Amount
+    let currency = bodyTemp.Data.Initiation.InstructedAmount.Currency
+
     console.log( '2. Initiating the Payment..' );
     console.log( JSON.stringify( options ) );
 
@@ -153,7 +163,13 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         //response.body.Links.next = external_url + 'paymentcomplete.html';
         //response.body.Links.next = external_url + 'redirect_location';
 
-        response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser";
+        //TODO add
+        // paymentId
+        // For now, please send me the client id: client123456, scope: psd2, amount: whatever the payment amount in query string when you call the loginOauthUser link.
+        // add as query params
+        response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser?client_id=client123456&scope=psd2&amount=" + amount + "&currency=" + currency
+        //response.body.Links.next = "http://localhost:8171/loginOauthUser?client_id=client123456&scope=psd2&amount=" + amount + "&currency=" + currency;
+
 
 
         //let token_url = response.body.Links.last.split('?')[0];
@@ -236,6 +252,7 @@ app.get('/redirect_location', function (req, res) {
 });
 */
 
+// TODO this really needs to be paymentSubmission to Banksy.  I do not handle getting the token
 app.get( '/oauth/callback', function ( req, res )
 {
 
@@ -267,8 +284,8 @@ app.get( '/oauth/callback', function ( req, res )
         {
             console.log( JSON.stringify( json ) )
             // TODO [patrick cremin] save the token so that it can be used for the payment
-            res.body.Links.next = external_url + 'redirect_payment_complete';
-            res.redirect(external_url + 'redirect_payment_complete')
+            //res.body.Links.next = external_url + 'redirect_payment_complete';
+            res.redirect('/redirect_payment_complete')
         } )
         .catch( error =>
         {
