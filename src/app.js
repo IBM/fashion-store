@@ -2,16 +2,6 @@
 // for more info, see: http://expressjs.com
 
 
-/*
-    [patrick cremin] Notes on payment and oauth process
-    1. user selects bank and hits 'pay now'
-    2. '/gateway/open-banking/payments': payment request is sent to api server and payment data is returned
-    3. oauth flow is started by redirecting the user to the bank login page
-    4. after users enters their credentials, bank redirects back to us '/oauth/callback'
-        a) code is used to get auth token from the bank
-    5. '/redirect_payment_complete' payment is completed and user is redirected to payment complete page
- */
-
 let express = require( 'express' );
 let path = require( 'path' );
 let request = require( 'request' );
@@ -23,7 +13,8 @@ const { URLSearchParams } = require( 'url' );
 
 let port = "8080";
 //let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
-let gateway_url = "http://athena1.fyre.ibm.com:32756/open-banking/"
+let gateway_url = "http://apollo11.fyre.ibm.com:8400/open-banking/"
+
 
 
 let external_url = 'http://shoe-store-svc:8080/';
@@ -124,6 +115,48 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     let bankId = req.header( "bankID" );
     ssn.bankId = bankId;
 
+    // let paymentSetupRequest = {
+    //     "Data": {
+    //         "Initiation": {
+    //             "InstructionIdentification": "ACME412",
+    //             "EndToEndIdentification": "FRESCO.21302.GFX.20",
+    //             "InstructedAmount": {
+    //                 "Amount": "165.88",
+    //                 "Currency": "GBP"
+    //             },
+    //             "CreditorAccount": {
+    //                 "SchemeName": "SortCodeAccountNumber",
+    //                 "Identification": "08080021325698",
+    //                 "Name": "ACME Inc",
+    //                 "SecondaryIdentification": "0002"
+    //             },
+    //             "RemittanceInformation": {
+    //                 "Reference": "FRESCO-101",
+    //                 "Unstructured": "Internal ops code 5120101"
+    //             }
+    //         }
+    //     },
+    //     "Risk": {
+    //         "PaymentContextCode": "EcommerceGoods",
+    //         "MerchantCategoryCode": "5967",
+    //         "MerchantCustomerIdentification": "053598653254",
+    //         "DeliveryAddress": {
+    //             "AddressLine": [
+    //                 "Flat 7",
+    //                 "Acacia Lodge"
+    //             ],
+    //             "StreetName": "Acacia Avenue",
+    //             "BuildingNumber": "27",
+    //             "PostCode": "GU31 2ZZ",
+    //             "TownName": "Sparsholt",
+    //             "CountySubDivision": [
+    //                 "Wessex"
+    //             ],
+    //             "Country": "UK"
+    //         }
+    //     }
+    // }
+
     let options = {
         "url": request_url,
         "headers": {
@@ -157,100 +190,23 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         tempData.Data = response.body.Data;
         tempData.Risk = response.body.Risk;
 
+        let paymentId = body.Data.PaymentId;
+
         ssn.payment_data = JSON.stringify( tempData );
 
-        //response.body.Links.next = response.body.Links.next.replace('redirect_uri=http://localhost:8080/paymentcomplete.html', 'redirect_uri=' + appEnv.url +'/redirect_location');
-        //response.body.Links.next = external_url + 'paymentcomplete.html';
-        //response.body.Links.next = external_url + 'redirect_location';
+        // TODO look for status code 302 and a redirectUrl
+        // use that redirectUrl instead of the hard coded url below
+        // Register bank oauth/callback with bank for the auth code that then gets passed to banksy
 
-        //TODO add
-        // paymentId
-        // For now, please send me the client id: client123456, scope: psd2, amount: whatever the payment amount in query string when you call the loginOauthUser link.
-        // add as query params
-        response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser?client_id=client123456&scope=psd2&amount=" + amount + "&currency=" + currency
-        //response.body.Links.next = "http://localhost:8171/loginOauthUser?client_id=client123456&scope=psd2&amount=" + amount + "&currency=" + currency;
+        let redirectUrl = response.headers.location
 
+        response.body.Links.next = redirectUrl + "?client_id=bbdf7ed0-2312-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
 
-
-        //let token_url = response.body.Links.last.split('?')[0];
-        //ssn.token_url = token_url;
-
-        //let next_url = response.body.Links.next;
-        //res.send(response.body);
+        //response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser?client_id=bbdf7ed0-2312-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
 
         res.send( body );
     } );
 } );
-
-// Step 4 (and 5) (how to be sure this comes from the auth server?)
-/*
-app.get('/redirect_location', function (req, res) {
-  // get the oauth code
-  let code = req.query.code;
-  // get the url for the bank oauth from the session (could save this somewhere else also)
-  let bank_url = ssn.token_url;
-  // swap this for a token
-  let options = {
-    method: 'POST',
-    url: ssn.token_url,
-    headers:
-    {
-      'content-type': 'application/x-www-form-urlencoded',
-      authorization: 'Basic NTA2ODJmNDItMzlkNC00ODAwLTk4Y2YtMWM0ZmRhYThlOGE2OnJDN3RFNHdONXhJNWNRNWFQNG5XNXhMN3NBM2NGMWdJOGNZM2lDMmlVNG9NN2VCN3NI'
-    },
-    form:
-    {
-      grant_type: 'authorization_code',
-      redirect_uri: appEnv.url + req.route.path, // TODO Check this appEnv.url reflects the correct port local!!!
-      code: code,
-    }
-  };
-
-  // step 4
-  console.log('4. Swapping the token for the authorizaion code..');
-  console.log(options);
-  request(options, function (error, response, body) {
-    console.log('error:', error); // Print the error if one occurred
-    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-    console.log('body:', body); // print the body
-
-    // submit the payment - Step 5
-    let access_token = JSON.parse(body).access_token;
-
-    let options = {
-      method: 'POST',
-      url: gateway_url + 'payment-submissions',
-      headers:
-      {
-        bankid: ssn.bankId,
-        'x-jws-signature': '1',
-        'x-idempotency-key': '1',
-        'x-fapi-interaction-id': '1',
-        'x-fapi-financial-id': '1',
-        'x-fapi-customer-last-logged-time': '1',
-        'x-fapi-customer-ip-address': '1',
-        'content-type': 'application/json',
-        accept: 'application/json',
-        authorization: 'Bearer ' + access_token
-      },
-      body: JSON.parse(ssn.payment_data),
-      json: true
-    };
-    console.log('5. Submitting the payment..');
-    console.log(options);
-    request(options, function (error, response, body) {
-      console.log('error:', error); // Print the error if one occurred
-      console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-      console.log('body:', body); // print the body
-
-      // send the completed file
-      res.redirect('/paymentcomplete.html');
-    });
-
-  });
-
-});
-*/
 
 // TODO this really needs to be paymentSubmission to Banksy.  I do not handle getting the token
 app.get( '/oauth/callback', function ( req, res )
@@ -266,12 +222,13 @@ app.get( '/oauth/callback', function ( req, res )
     let data = new URLSearchParams();
     data.append( "code", req.query.code );
     data.append( 'grant_type', 'authorization_code' );
-    data.append( 'client_id', 'client123456' );
-    data.append( 'client_secret', 'client123456' );
-    data.append( 'redirect_uri', 'http://169.46.60.51:8181/login' );
+    data.append( 'client_id', 'bbdf7ed0-2312-11e8-9303-ed96349e1d66' );
+    data.append( 'client_secret', '3805c851-baf1-4fab-b6aa-ba04d2d5d252' );
+    data.append( 'redirect_uri', 'http://9.30.250.159:30001/oauth/callback' );
 
 
-    fetch( "http://169.46.60.51:8181/oauth/token",
+    let url =  gateway_url + 'oauth';
+    fetch( url,
         {
             method: 'POST',
             body: data
@@ -282,9 +239,9 @@ app.get( '/oauth/callback', function ( req, res )
         } )
         .then( json =>
         {
+            // TODO check for status 302
             console.log( JSON.stringify( json ) )
-            // TODO [patrick cremin] save the token so that it can be used for the payment
-            //res.body.Links.next = external_url + 'redirect_payment_complete';
+
             res.redirect('/redirect_payment_complete')
         } )
         .catch( error =>
