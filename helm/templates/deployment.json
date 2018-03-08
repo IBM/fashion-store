@@ -2,13 +2,14 @@
   "apiVersion" : "apps/v1beta2",
   "kind" : "Deployment",
   "metadata" : {
-    "name" : "shoe-store-deployment",
+    "name" : "shoe-store-deploy",
+    "namespace": "banksy-ns",
     "labels" : {
       "app" : "shoe-store"
     }
   },
   "spec": {
-    "replicas": 2,
+    "replicas": 1,
     "selector" : {
       "matchLabels" : {
         "app" : "shoe-store"
