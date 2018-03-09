@@ -262,7 +262,7 @@ app.get( '/redirect_bank_login', function( req, res ) {
 app.get( '/redirect_payment_complete', function ( req, res )
 {
     // add bank login here
-    let options = {
+    /*let options = {
         method: 'POST',
         url: gateway_url + 'payment-submissions',
         headers:
@@ -293,7 +293,9 @@ app.get( '/redirect_payment_complete', function ( req, res )
 
         // send the completed file
         res.redirect( '/paymentcomplete.html' );
-    } );
+    } );*/
+    
+    res.redirect( '/paymentcomplete.html' );
 } );
 
 // the cfenv library will not reflect a change to the port in it's url
