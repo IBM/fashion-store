@@ -282,7 +282,7 @@ app.get( '/redirect_payment_complete', function ( req, res )
         json: true
     };
 
-    console.log( '5. Submitting the payment..' );
+    /*console.log( '5. Submitting the payment..' );
     console.log( JSON.stringify( options ) );
 
     request( options, function ( error, response, body )
@@ -293,7 +293,9 @@ app.get( '/redirect_payment_complete', function ( req, res )
 
         // send the completed file
         res.redirect( '/paymentcomplete.html' );
-    } );
+    } );*/
+    
+    res.redirect( '/paymentcomplete.html' );
 } );
 
 // the cfenv library will not reflect a change to the port in it's url
