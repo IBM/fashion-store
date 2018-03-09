@@ -262,7 +262,7 @@ app.get( '/redirect_bank_login', function( req, res ) {
 app.get( '/redirect_payment_complete', function ( req, res )
 {
     // add bank login here
-    let options = {
+    /*let options = {
         method: 'POST',
         url: gateway_url + 'payment-submissions',
         headers:
@@ -282,7 +282,7 @@ app.get( '/redirect_payment_complete', function ( req, res )
         json: true
     };
 
-    /*console.log( '5. Submitting the payment..' );
+    console.log( '5. Submitting the payment..' );
     console.log( JSON.stringify( options ) );
 
     request( options, function ( error, response, body )
