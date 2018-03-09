@@ -1,0 +1,40 @@
+{
+  "apiVersion" : "apps/v1beta2",
+  "kind" : "Deployment",
+  "metadata" : {
+    "name" : "shoe-store-deploy",
+    "namespace": "banksy-ns",
+    "labels" : {
+      "app" : "shoe-store"
+    }
+  },
+  "spec": {
+    "replicas": 1,
+    "selector" : {
+      "matchLabels" : {
+        "app" : "shoe-store"
+      }
+    },
+    "template" : {
+      "metadata" : {
+        "labels" : {
+          "app" : "shoe-store"
+        }
+      },
+      "spec": {
+        "containers":[
+          {
+            "name": "shoe-store",
+            "image": "artemis1.fyre.ibm.com:5000/banksy-ns/shoe-store:latest",
+            "ports": [{ 
+                "name": "shoe-store",
+                "protocol": "TCP",
+                "containerPort": 8080
+              }
+            ] 
+          }
+        ]
+      }
+    }
+  }
+}
