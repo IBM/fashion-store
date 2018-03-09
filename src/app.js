@@ -15,7 +15,8 @@ let port = "8080";
 //let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
 let gateway_url = "http://apollo11.fyre.ibm.com:8400/open-banking/"
 
-
+// TODO crap global to hold the paymentId
+let paymentId = null
 
 let external_url = 'http://shoe-store-svc:8080/';
 
@@ -190,7 +191,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         tempData.Data = response.body.Data;
         tempData.Risk = response.body.Risk;
 
-        let paymentId = body.Data.PaymentId;
+        paymentId = body.Data.PaymentId;
 
         ssn.payment_data = JSON.stringify( tempData );
 
@@ -200,7 +201,9 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
         let redirectUrl = response.headers.location
 
-        response.body.Links.next = redirectUrl + "?client_id=bbdf7ed0-2312-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
+        console.log('/payments response redirect_url: ' + redirectUrl)
+
+        response.body.Links.next = redirectUrl + "?client_id=54c715f0-231c-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
 
         //response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser?client_id=bbdf7ed0-2312-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
 
@@ -220,11 +223,13 @@ app.get( '/oauth/callback', function ( req, res )
     }
 
     let data = new URLSearchParams();
-    data.append( "code", req.query.code );
+    data.append( "authorizationcode", req.query.code );
+    data.append( "paymentid", paymentId );
+    data.append( "merchantid", "M0000" );
     data.append( 'grant_type', 'authorization_code' );
-    data.append( 'client_id', 'bbdf7ed0-2312-11e8-9303-ed96349e1d66' );
-    data.append( 'client_secret', '3805c851-baf1-4fab-b6aa-ba04d2d5d252' );
-    data.append( 'redirect_uri', 'http://9.30.250.159:30001/oauth/callback' );
+    data.append( 'client_id', '54c715f0-231c-11e8-9303-ed96349e1d66' );
+    data.append( 'client_secret', '16826038-c685-484e-9cb6-0fd2e5feecda' );
+    data.append( 'redirect_uri', 'http://apollo11.fyre.ibm.com:8500/oauth/callback' );
 
 
     let url =  gateway_url + 'oauth';
@@ -235,13 +240,7 @@ app.get( '/oauth/callback', function ( req, res )
         } )
         .then( response =>
         {
-            return response.json()
-        } )
-        .then( json =>
-        {
-            // TODO check for status 302
-            console.log( JSON.stringify( json ) )
-
+            // TODO check that there is a 302 status code
             res.redirect('/redirect_payment_complete')
         } )
         .catch( error =>
