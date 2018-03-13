@@ -39,6 +39,8 @@ let cfenv = require( 'cfenv' );
 // create a new express server
 let app = express();
 
+app.use('/', express.static(`${__dirname}/client/build`));
+
 // serve the files out of ./public as our main files
 app.use( express.static( path.join( __dirname, '/public' ) ) );
 // session tokens
@@ -72,8 +74,8 @@ app.get( '/', function ( req, res )
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
     let request_url = gateway_url + 'banks';
-    console.log( request_url );
-    console.log( req.headers );
+    // console.log( request_url );
+    // console.log( req.headers );
     let options = {
         "url": request_url,
         "headers": {
@@ -88,13 +90,13 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
         if(error || response.statusCode !== 200)
         {
             console.log( 'error:', error ); // Print the error if one occurred
-            res.send(500)
+            res.sendStatus(500)
         }
         else
         {
             console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
             console.log( 'body:', body );
-            res.send( JSON.parse( response.body ) );
+            res.json( JSON.parse(response.body) );
         }
     } );
 
@@ -103,60 +105,63 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
 // payment initiations step 2
 app.post( '/gateway/open-banking/payments', function ( req, res )
 {
-    ssn = req.session;
+    ssn = req.session
 
-    let tempData = {};
-    let request_url = gateway_url + 'payments';
+    let tempData = {}
+    let request_url = gateway_url + 'payments'
 
-    console.log( request_url );
+    console.log( request_url )
 
-    let bodyTemp = JSON.stringify( req.body );
-    bodyTemp = JSON.parse( bodyTemp );
+    let bodyTemp = JSON.stringify( req.body )
+    bodyTemp = JSON.parse( bodyTemp )
 
-    let bankId = req.header( "bankID" );
-    ssn.bankId = bankId;
 
-    // let paymentSetupRequest = {
-    //     "Data": {
-    //         "Initiation": {
-    //             "InstructionIdentification": "ACME412",
-    //             "EndToEndIdentification": "FRESCO.21302.GFX.20",
-    //             "InstructedAmount": {
-    //                 "Amount": "165.88",
-    //                 "Currency": "GBP"
-    //             },
-    //             "CreditorAccount": {
-    //                 "SchemeName": "SortCodeAccountNumber",
-    //                 "Identification": "08080021325698",
-    //                 "Name": "ACME Inc",
-    //                 "SecondaryIdentification": "0002"
-    //             },
-    //             "RemittanceInformation": {
-    //                 "Reference": "FRESCO-101",
-    //                 "Unstructured": "Internal ops code 5120101"
-    //             }
-    //         }
-    //     },
-    //     "Risk": {
-    //         "PaymentContextCode": "EcommerceGoods",
-    //         "MerchantCategoryCode": "5967",
-    //         "MerchantCustomerIdentification": "053598653254",
-    //         "DeliveryAddress": {
-    //             "AddressLine": [
-    //                 "Flat 7",
-    //                 "Acacia Lodge"
-    //             ],
-    //             "StreetName": "Acacia Avenue",
-    //             "BuildingNumber": "27",
-    //             "PostCode": "GU31 2ZZ",
-    //             "TownName": "Sparsholt",
-    //             "CountySubDivision": [
-    //                 "Wessex"
-    //             ],
-    //             "Country": "UK"
-    //         }
-    //     }
-    // }
+    let amount = req.body.amount
+    let currency = req.body.currency
+    let bankId = req.body.bankId
+    ssn.bankId = bankId
+
+    let paymentSetupRequest = {
+        "Data": {
+            "Initiation": {
+                "InstructionIdentification": "ACME412",
+                "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                "InstructedAmount": {
+                    "Amount": amount,
+                    "Currency": currency
+                },
+                "CreditorAccount": {
+                    "SchemeName": "SortCodeAccountNumber",
+                    "Identification": "08080021325698",
+                    "Name": "ACME Inc",
+                    "SecondaryIdentification": "0002"
+                },
+                "RemittanceInformation": {
+                    "Reference": "FRESCO-101",
+                    "Unstructured": "Internal ops code 5120101"
+                }
+            }
+        },
+        "Risk": {
+            "PaymentContextCode": "EcommerceGoods",
+            "MerchantCategoryCode": "5967",
+            "MerchantCustomerIdentification": "053598653254",
+            "DeliveryAddress": {
+                "AddressLine": [
+                    "Flat 7",
+                    "Acacia Lodge"
+                ],
+                "StreetName": "Acacia Avenue",
+                "BuildingNumber": "27",
+                "PostCode": "GU31 2ZZ",
+                "TownName": "Sparsholt",
+                "CountySubDivision": [
+                    "Wessex"
+                ],
+                "Country": "UK"
+            }
+        }
+    }
 
     let options = {
         "url": request_url,
@@ -172,18 +177,21 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "x-jws-signature": 1,
             "bankid": bankId,
         },
-        "body": bodyTemp,
+        "body": paymentSetupRequest,
         json: true
     };
-
-    let amount = bodyTemp.Data.Initiation.InstructedAmount.Amount
-    let currency = bodyTemp.Data.Initiation.InstructedAmount.Currency
 
     console.log( '2. Initiating the Payment..' );
     console.log( JSON.stringify( options ) );
 
     request.post( options, function ( error, response, body )
     {
+        if(response.statusCode !== 302)
+        {
+            res.sendStatus(500)
+            return
+        }
+
         console.log( 'error:', error ); // Print the error if one occurred
         console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
         console.log( 'body:', body ); // print the body
@@ -199,15 +207,15 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         // use that redirectUrl instead of the hard coded url below
         // Register bank oauth/callback with bank for the auth code that then gets passed to banksy
 
-        let redirectUrl = response.headers.location
+        let redirectUrl = response.headers.location + "?client_id=54c715f0-231c-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
 
         console.log('/payments response redirect_url: ' + redirectUrl)
 
-        response.body.Links.next = redirectUrl + "?client_id=54c715f0-231c-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
+        //response.body.Links.next = redirectUrl
 
         //response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser?client_id=bbdf7ed0-2312-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
 
-        res.send( body );
+        res.json( { redirect_url: redirectUrl } );
     } );
 } );
 
@@ -222,14 +230,17 @@ app.get( '/oauth/callback', function ( req, res )
         return
     }
 
-    let data = new URLSearchParams();
-    data.append( "authorizationcode", req.query.code );
-    data.append( "paymentid", paymentId );
-    data.append( "merchantid", "M0000" );
-    data.append( 'grant_type', 'authorization_code' );
-    data.append( 'client_id', '54c715f0-231c-11e8-9303-ed96349e1d66' );
-    data.append( 'client_secret', '16826038-c685-484e-9cb6-0fd2e5feecda' );
-    data.append( 'redirect_uri', 'http://apollo11.fyre.ibm.com:8500/oauth/callback' );
+    // TODO the account number should be in the req.query and I need to pass that as well
+
+    let data = new URLSearchParams()
+    data.append( "authorizationcode", req.query.code )
+    data.append( "paymentid", paymentId )
+    data.append( "merchantid", "M0000" )
+    data.append( "accountno", req.query.accountno)
+    data.append( 'grant_type', 'authorization_code' )
+    data.append( 'client_id', '54c715f0-231c-11e8-9303-ed96349e1d66' )
+    data.append( 'client_secret', '16826038-c685-484e-9cb6-0fd2e5feecda' )
+    data.append( 'redirect_uri', 'http://apollo11.fyre.ibm.com:8500/oauth/callback' )
 
 
     let url =  gateway_url + 'oauth';
