@@ -4,8 +4,11 @@ export const addItemToCart = createAction( 'ADD_ITEM_TO_CART' )
 export const exampleAction2 = createAction( 'EXAMPLE_ACTION2' )
 export const receiveBanks = createAction( 'RECEIVE_BANKS' )
 export const bankSelected = createAction( 'BANK_SELECTED' )
-export const paymentInitiated = createAction( 'PAYMENT_INITIATED' )
-export const paymentLoginCompleted = createAction( 'PAYMENT_LOGIN_COMPLETED' )
+
+export const bankLoginCompleted = createAction( 'BANK_LOGIN_COMPLETED' )
+
+export const paymentInitiationSent = createAction( 'PAYMENT_INITIATED_SENT' )
+export const paymentInitiatedReceived = createAction( 'PAYMENT_INITIATED_RECEIVED' )
 
 function url()
 {
@@ -50,6 +53,8 @@ export function sendPayment( bank, amount )
     return dispatch =>
     {
 
+        dispatch(paymentInitiationSent())
+
         return fetch( '/gateway/open-banking/payments', {
             method: 'POST',
             headers: {
@@ -61,17 +66,23 @@ export function sendPayment( bank, amount )
                 currency: 'GBP'
             })
         } )
-            .then( response => {
-                if(response.status !== 302)
+            .then( response =>
+            {
+                if(response.status !== 200)
                 {
-                    throw "Server errror: " + response.status
+                    throw "bad status: " + response.status
                 }
 
                 return response.json()
             } )
             .then( json =>
             {
-                dispatch( paymentInitiated( json.redirect_url ) )
+                dispatch( paymentInitiatedReceived( json.redirect_url ) )
+
+                //TODO THIS IS TEST CODE REMOVE THIS CRAP
+                setTimeout(()=>{
+                    fetch('/oauth/callback?code=98702319847@accountno=asdfasdf23')
+                }, 2000)
             } );
     }
 }

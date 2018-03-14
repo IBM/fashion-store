@@ -25,11 +25,6 @@ const BankSelector = ( { bank, selectedBank, dispatch } ) =>
     )
 }
 
-const BankLogin = ({ bank }) => (
-    <div>
-
-    </div>
-)
 
 const Banks = ( { banks, selectedBank, dispatch } ) => (
 
@@ -82,11 +77,11 @@ class Checkout extends React.Component
 
                     <Row>
                         <Col xs={6} md={6}>
-                            <Image responsive src={require( '../images/bank_icon.jpg' )} rounded
+                            <Image style={{height: 150}} responsive src={require( '../images/bank_icon.jpg' )} rounded
                                    onClick={() => this.setState( { paymentMethod: 'bank' } )}/>
                         </Col>
                         <Col xs={6} md={6}>
-                            <Image responsive src={require( '../images/visa-and-mastercard.gif' )} rounded
+                            <Image style={{height: 150}} responsive src={require( '../images/visa-and-mastercard.gif' )} rounded
                                    onClick={() => this.setState( { paymentMethod: 'creditcard' } )}/>
                         </Col>
                     </Row>

@@ -6,9 +6,10 @@ import _ from 'lodash'
 import { Media, Row, Col, Button, Image, Modal, OverlayTrigger } from 'react-bootstrap';
 import Popup from "reactjs-popup";
 import Iframe from 'react-iframe'
-import { fetchBanks, bankSelected, sendPayment } from '../actions/store.actions'
+import { fetchBanks, bankSelected, sendPayment, bankLoginCompleted } from '../actions/store.actions'
 
 import Checkout from './Checkout'
+import Spinner from 'react-spinkit'
 
 // TODO dispatch is so they can remove items from the cart.  Low priority
 // TODO prob need row/col instead of media component so things line up better
@@ -33,15 +34,29 @@ const ItemRow = ( { item, dispatch } ) => (
     </Media>
 )
 
-const PaymentLogin = ( { show, paymentMethodLoginUrl } ) => (
+const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide } ) => (
     <Modal show={show}>
         <Modal.Body>
 
-            <Iframe url={paymentMethodLoginUrl}
-                    width="450px"
-                    height="450px"
-            />
+            <div style={{width:450, height:600}}>
 
+                {paymentLoginInitiated ?
+                    <div  style={{left: '57%', top: '50%', position: 'relative'}}>
+                        <Spinner name='double-bounce'/>
+                    </div> :
+                    <div style={{position: 'absolute', left: 70, }}>
+                        <Iframe url={paymentMethodLoginUrl}
+
+                                width="450px"
+                                height="550px"
+                        />
+                    </div>
+                }
+
+
+                <Button onClick={onHide}
+                    style={{position: 'absolute', left: 250, bottom: 10}}>Cancel</Button>
+            </div>
         </Modal.Body>
     </Modal>
 )
@@ -52,12 +67,12 @@ class Cart extends React.Component
     {
         super( props )
 
-        this.state = { checkout: false }
+        this.state = { showCheckout: false }
     }
 
     render()
     {
-        let { cartItems, dispatch, total, paymentMethodLoginUrl } = { ...this.props }
+        let { cartItems, dispatch, total, paymentMethodLoginUrl, paymentLoginInitiated } = { ...this.props }
         return (
             <div style={{ margin: 50 }}>
                 <Header/>
@@ -78,7 +93,7 @@ class Cart extends React.Component
                 </Row>
 
                 <hr/>
-                {cartItems.map( (item, i) => <ItemRow key={i} item={item} dispatch={dispatch}/> )}
+                {cartItems.map( ( item, i ) => <ItemRow key={i} item={item} dispatch={dispatch}/> )}
 
                 <Row>
                     <Col md={8}/>
@@ -88,26 +103,25 @@ class Cart extends React.Component
                 </Row>
                 <hr/>
 
-                <div style={{ margin: 50 }}>
+                <Button onClick={() =>
+                {
+                    dispatch( fetchBanks() )
+                    this.setState( { showCheckout: true } )
+                }}
+                        disabled={!total || total <= 0}
+                >CHECKOUT</Button>
 
-                    <Checkout
-                        onHide={() => this.setState( { checkout: false } )}
-                        show={this.state.checkout}
-                    />
 
-                    <Button onClick={() =>
-                    {
-                        dispatch( fetchBanks() )
-                        this.setState( { checkout: true } )
+                <Checkout
+                    onHide={() => {
+                        this.setState( { showCheckout: false } )
                     }}
-                            disabled={!total || total <= 0}
-                    >CHECKOUT</Button>
+                    show={this.state.showCheckout}
+                />
 
-                </div>
-
-                <div>
-                    <PaymentLogin show={!!paymentMethodLoginUrl} paymentMethodLoginUrl={paymentMethodLoginUrl}/>
-                </div>
+                <BankLogin show={paymentLoginInitiated || !!paymentMethodLoginUrl} paymentLoginInitiated={paymentLoginInitiated} paymentMethodLoginUrl={paymentMethodLoginUrl}
+                           onHide={()=>dispatch(bankLoginCompleted(null))}
+                />
             </div>
         )
     }
@@ -121,5 +135,6 @@ export default connect( state =>
         banks: state.store.banks,
         total: state.store.total,
         paymentMethodLoginUrl: state.store.paymentMethodLoginUrl,
+        paymentLoginInitiated: state.store.paymentLoginInitiated,
     }
 } )( Cart )

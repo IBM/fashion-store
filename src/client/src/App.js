@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import Header from './components/Header'
+import { hot } from 'react-hot-loader'
 import Cart from './components/Cart'
 import Main from './components/Main'
 import Shop from './components/Shop'
@@ -30,4 +30,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default hot(module)(App);

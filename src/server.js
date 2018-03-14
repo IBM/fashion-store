@@ -107,58 +107,62 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 {
     ssn = req.session
 
-    let tempData = {}
     let request_url = gateway_url + 'payments'
 
     console.log( request_url )
 
-    let bodyTemp = JSON.stringify( req.body )
-    bodyTemp = JSON.parse( bodyTemp )
-
-
     let amount = req.body.amount
     let currency = req.body.currency
-    let bankId = req.body.bankId
+    let bankId = req.header( "bankID" )
     ssn.bankId = bankId
 
     let paymentSetupRequest = {
         "Data": {
             "Initiation": {
-                "InstructionIdentification": "ACME412",
-                "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                "InstructionIdentification": "5791997839278080",
+                "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
-                    "Amount": amount,
-                    "Currency": currency
+                    "Amount": "700.00",
+                    "Currency": "EUR"
+                },
+                "DebtorAgent": {
+                    "SchemeName": "BICFI",
+                    "Identification": "AAAAGB2L"
+                },
+                "DebtorAccount": {
+                    "SchemeName": "IBAN",
+                    "Identification": "IE29AIBK93115212345678",
+                    "Name": "Gary Kean",
+                    "SecondaryIdentification": "6686302651023360"
+                },
+                "CreditorAgent": {
+                    "SchemeName": "BICFI",
+                    "Identification": "AAAAGB2K"
                 },
                 "CreditorAccount": {
-                    "SchemeName": "SortCodeAccountNumber",
-                    "Identification": "08080021325698",
-                    "Name": "ACME Inc",
-                    "SecondaryIdentification": "0002"
+                    "SchemeName": "IBAN",
+                    "Identification": "IE29AIBK93115212345676",
+                    "Name": "Carlo Marcoli",
+                    "SecondaryIdentification": "8380390651723776"
                 },
                 "RemittanceInformation": {
-                    "Reference": "FRESCO-101",
-                    "Unstructured": "Internal ops code 5120101"
+                    "Unstructured": "emeherpakkaodafeofiu",
+                    "Reference": "ehoorepre"
                 }
             }
         },
         "Risk": {
-            "PaymentContextCode": "EcommerceGoods",
-            "MerchantCategoryCode": "5967",
-            "MerchantCustomerIdentification": "053598653254",
+            "PaymentContextCode": "PersonToPerson",
+            "MerchantCategoryCode": "nis",
+            "MerchantCustomerIdentification": "1130294929260544",
             "DeliveryAddress": {
-                "AddressLine": [
-                    "Flat 7",
-                    "Acacia Lodge"
-                ],
-                "StreetName": "Acacia Avenue",
-                "BuildingNumber": "27",
-                "PostCode": "GU31 2ZZ",
-                "TownName": "Sparsholt",
-                "CountySubDivision": [
-                    "Wessex"
-                ],
-                "Country": "UK"
+                "AddressLine": ["totbelsanagrusa"],
+                "StreetName": "Morning Road",
+                "BuildingNumber": "62",
+                "PostCode": "G3 5HY",
+                "TownName": "Glasgow",
+                "CountrySubDivision": ["Scotland"],
+                "Country": "GB"
             }
         }
     }
@@ -196,12 +200,9 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
         console.log( 'body:', body ); // print the body
 
-        tempData.Data = response.body.Data;
-        tempData.Risk = response.body.Risk;
-
         paymentId = body.Data.PaymentId;
 
-        ssn.payment_data = JSON.stringify( tempData );
+        //ssn.payment_data = JSON.stringify( tempData );
 
         // TODO look for status code 302 and a redirectUrl
         // use that redirectUrl instead of the hard coded url below
@@ -244,20 +245,23 @@ app.get( '/oauth/callback', function ( req, res )
 
 
     let url =  gateway_url + 'oauth';
-    fetch( url,
-        {
-            method: 'POST',
-            body: data
-        } )
-        .then( response =>
-        {
-            // TODO check that there is a 302 status code
-            res.redirect('/redirect_payment_complete')
-        } )
-        .catch( error =>
-        {
-            console.log( error )
-        } )
+
+    res.redirect('/paymentcomplete')
+
+    // fetch( url,
+    //     {
+    //         method: 'POST',
+    //         body: data
+    //     } )
+    //     .then( response =>
+    //     {
+    //         // TODO check that there is a 302 status code
+    //         res.redirect('/paymentcomplete')
+    //     } )
+    //     .catch( error =>
+    //     {
+    //         console.log( error )
+    //     } )
 } );
 
 app.get( '/redirect_bank_login', function( req, res ) {
@@ -305,7 +309,7 @@ app.get( '/redirect_payment_complete', function ( req, res )
         // send the completed file
         res.redirect( '/paymentcomplete.html' );
     } );*/
-    
+
     res.redirect( '/paymentcomplete.html' );
 } );
 

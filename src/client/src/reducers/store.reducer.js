@@ -1,10 +1,10 @@
 import { handleActions } from 'redux-actions'
 
-import { addItemToCart, receiveBanks, bankSelected, paymentInitiated, paymentLoginCompleted } from '../actions/store.actions'
+import { addItemToCart, receiveBanks, bankSelected, paymentInitiatedReceived, bankLoginCompleted, paymentInitiationSent } from '../actions/store.actions'
 
 import _ from 'lodash'
 
-const initialState = { cartItems: [], numItems: 0, banks: [] }
+const initialState = { cartItems: [], numItems: 0, banks: [], paymentLoginInitiated: false }
 
 export default handleActions(
     {
@@ -48,15 +48,26 @@ export default handleActions(
             selectedBank: action.payload
         }),
 
-        [paymentInitiated]: (state, action) => ({
+        [paymentInitiatedReceived]: (state, action) => ({
             ...state,
-            paymentMethodLoginUrl: action.payload
+            paymentMethodLoginUrl: action.payload,
+            paymentLoginInitiated: false,
         }),
 
-        [paymentLoginCompleted]: (state, action) => ({
+        [bankLoginCompleted]: ( state, action) => ({
             ...state,
-            paymentMethodLoginUrl: null
+            paymentMethodLoginUrl: null,
+
         }),
+
+        [paymentInitiationSent]: (state, action) => {
+            return {
+                ...state,
+                paymentLoginInitiated: true,
+            }
+        },
+
+
 
     },
     initialState,
