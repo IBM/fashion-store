@@ -52,9 +52,11 @@ export function sendPayment( bank, amount )
 
         return fetch( '/gateway/open-banking/payments', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'bankid' : bank.BankID,
+            },
             body: JSON.stringify({
-                bankId: bank.BankID,
                 amount,
                 currency: 'GBP'
             })
