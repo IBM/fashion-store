@@ -1,33 +1,41 @@
 import React from 'react';
 import Header from './Header'
 
-import { Link } from 'react-router-dom'
-import { Row, Col, Button } from 'react-bootstrap';
+import { Link, Route } from 'react-router-dom'
+import { Row, Col, Button, Image } from 'react-bootstrap';
 
 const imageUrl = require( '../images/store-main.jpg' )
 
 export default () => (
+
     <div style={{
-        margin:50,
         backgroundImage: `url(${imageUrl})`,
-        "background-size": "cover",
+        "background-size": "contain",
+        "background-repeat": "no-repeat",
+        "background-position": "center",
         position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
+
+        width: "100%",
+        height: "100%"
     }}>
         <Header/>
 
 
+        <div style={{
+            margin: 50,
 
-        <Row style={{marginTop:200}}>
-            <Col md={2}>
-                <Button bsSize="large">
-                    <Link to='/shop'>Shop</Link>
-                </Button>
-            </Col>
-            <Col md={10}/>
-        </Row>
+        }}>
+            <div style={{ marginTop: 100, marginLeft: 50, float: "left" }}>
+                <Image src={require( '../images/herenow.png' )} style={{ height: 50 }} responsive/>
+                <Route path="/" render={( props ) => (
+                    <Button
+                        onClick={() => props.history.push( '/shop' )}
+                        bsSize="lg"
+                        style={{ width: 140, backgroundColor: 'transparent' }}>
+                        Shop
+                    </Button>)}/>
+            </div>
+
+        </div>
     </div>
 )
