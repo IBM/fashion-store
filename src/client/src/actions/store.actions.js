@@ -83,6 +83,7 @@ export function sendPayment( bank, amount )
             .then( json =>
             {
 
+                console.log('BANK LOGIN URL: ' + json.redirect_url )
                 dispatch( paymentInitiatedReceived( json.redirect_url ) )
 
                 // setTimeout(()=>{
