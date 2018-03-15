@@ -9,7 +9,7 @@ const ItemRow = ( { item } ) => (
     <div style={{margin:10, marginLeft: "20%", marginRight:"20%"}}>
     <Row>
         <Col xs={3} md={3}>
-            <Image responsive src={item.url} style={{height: 50}}/>
+            <Image rounded responsive src={item.url} style={{height: 50}}/>
         </Col>
         <Col xs={3} md={3}>
             {item.title}

@@ -2,7 +2,7 @@ import React from 'react';
 import Header from './Header'
 
 import { Link, Route } from 'react-router-dom'
-import { Row, Col, Button, Image } from 'react-bootstrap';
+import { Row, Col, Button, Image, Label } from 'react-bootstrap';
 
 const imageUrl = require( '../images/store-main.jpg' )
 
@@ -22,16 +22,16 @@ export default () => (
 
 
         <div style={{
-            margin: 50,
+            margin: 25,
 
         }}>
-            <div style={{ marginTop: 100, marginLeft: 50, float: "left" }}>
-                <Image src={require( '../images/herenow.png' )} style={{ height: 50 }} responsive/>
+            <div style={{ marginTop: 200, marginLeft: 0, float: "left" }}>
+                <Image src={require( '../images/herenow.png' )} style={{ height: 35, margin: 10 }} responsive/>
                 <Route path="/" render={( props ) => (
                     <Button
                         onClick={() => props.history.push( '/shop' )}
-                        bsSize="lg"
-                        style={{ width: 140, backgroundColor: 'transparent' }}>
+
+                        style={{ width: 100, backgroundColor: 'transparent' }}>
                         Shop
                     </Button>)}/>
             </div>
