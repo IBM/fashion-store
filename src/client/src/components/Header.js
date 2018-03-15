@@ -18,7 +18,8 @@ const Header = ( { numItems } ) => (
                     </div>
 
                 </Col>
-                <Col xs={4} md={8}></Col>
+                <Col xs={4} md={8}>
+                </Col>
                 <Col xs={6} md={2}>
                     <Link to='/cart'>Cart({numItems})</Link>
                 </Col>

@@ -1,5 +1,7 @@
 import React from 'react';
 import Header from './Header'
+import { Route, Redirect } from 'react-router'
+import { withRouter } from "react-router-dom";
 
 import { connect } from 'react-redux'
 import _ from 'lodash'
@@ -70,9 +72,19 @@ class Cart extends React.Component
         this.state = { showCheckout: false }
     }
 
+    componentWillReceiveProps(nextProps)
+    {
+        if(nextProps.bankLoginCompleted)
+        {
+            this.props.history.push("/paymentcomplete");
+        }
+    }
+
     render()
     {
         let { cartItems, dispatch, total, paymentMethodLoginUrl, paymentLoginInitiated } = { ...this.props }
+
+
         return (
             <div style={{ margin: 50 }}>
                 <Header/>
@@ -136,5 +148,6 @@ export default connect( state =>
         total: state.store.total,
         paymentMethodLoginUrl: state.store.paymentMethodLoginUrl,
         paymentLoginInitiated: state.store.paymentLoginInitiated,
+        bankLoginCompleted: state.store.bankLoginCompleted,
     }
 } )( Cart )

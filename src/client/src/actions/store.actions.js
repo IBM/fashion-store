@@ -1,4 +1,5 @@
 import { createAction } from 'redux-actions'
+import history from '../history';
 
 export const addItemToCart = createAction( 'ADD_ITEM_TO_CART' )
 export const exampleAction2 = createAction( 'EXAMPLE_ACTION2' )
@@ -9,6 +10,10 @@ export const bankLoginCompleted = createAction( 'BANK_LOGIN_COMPLETED' )
 
 export const paymentInitiationSent = createAction( 'PAYMENT_INITIATED_SENT' )
 export const paymentInitiatedReceived = createAction( 'PAYMENT_INITIATED_RECEIVED' )
+
+export const paymentCompleted = createAction( 'PAYMENT_COMPLETED' )
+
+
 
 function url()
 {
@@ -77,14 +82,38 @@ export function sendPayment( bank, amount )
             } )
             .then( json =>
             {
+
                 dispatch( paymentInitiatedReceived( json.redirect_url ) )
 
-                //TODO THIS IS TEST CODE REMOVE THIS CRAP
-                setTimeout(()=>{
-                    fetch('/oauth/callback?code=98702319847@accountno=asdfasdf23')
-                }, 2000)
+                // setTimeout(()=>{
+                //     fetch('test')
+                // }, 0)
+
+                pollForAuthComplete(dispatch)
+
+                // //TODO THIS IS TEST CODE REMOVE THIS CRAP
+                // setTimeout(()=>{
+                //     fetch('/oauth/callback?code=98702319847@accountno=asdfasdf23')
+                // }, 2000)
             } );
     }
+}
+
+function pollForAuthComplete(dispatch)
+{
+    fetch('/checkauthcomplete')
+        .then( response => {
+            if(response.status === 200)
+            {
+                dispatch( bankLoginCompleted(true) )
+                dispatch( paymentCompleted(true) )
+            }
+            else {
+                setTimeout(()=>{
+                    pollForAuthComplete(dispatch)
+                }, 1000)
+            }
+        })
 }
 
 export function fetchBanksResponse( banks )

@@ -5,7 +5,7 @@ import _ from 'lodash'
 import { Media, Row, Col, Button, Image, Modal, OverlayTrigger } from 'react-bootstrap';
 
 import { connect } from 'react-redux'
-import { fetchBanks, bankSelected, sendPayment } from '../actions/store.actions'
+import { fetchBanks, bankSelected, sendPayment, paymentCompleted } from '../actions/store.actions'
 
 const BankSelector = ( { bank, selectedBank, dispatch } ) =>
 {
@@ -63,6 +63,7 @@ class Checkout extends React.Component
         this.state = { paymentMethod: null }
     }
 
+
     //TODO fetch bank on component load
     render()
     {
@@ -114,5 +115,6 @@ export default connect( state =>
         banks: state.store.banks,
         selectedBank: state.store.selectedBank,
         total: state.store.total,
+        bankLoginCompleted: state.store.bankLoginCompleted,
     }
 } )( Checkout )

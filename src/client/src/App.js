@@ -10,7 +10,7 @@ import PaymentComplete from './components/PaymentComplete'
 
 import { Switch, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
-
+import history from './history';
 import store from './store'
 
 class App extends Component {
@@ -18,7 +18,7 @@ class App extends Component {
     return (
         <Provider store={store}>
           <div className="App">
-              <Switch>
+              <Switch history={history}>
                   <Route exact path='/' component={Main}/>
                   <Route path='/cart' component={Cart}/>
                   <Route path='/shop' component={Shop}/>

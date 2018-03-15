@@ -40,6 +40,19 @@ let cfenv = require( 'cfenv' );
 let app = express();
 
 app.use('/', express.static(`${__dirname}/client/build`));
+//[^api|^gateway|^test|^redirect|^oauth]
+// app.get('/*', (req,res) => {
+//     res.sendFile(path.join(__dirname+'/client/build/index.html'))
+// })
+
+
+// app.get('/store', function(req, res) {
+//     res.sendFile(path.join(__dirname, 'client/build/index.html'), function(err) {
+//         if (err) {
+//             res.status(500).send(err)
+//         }
+//     })
+// })
 
 // serve the files out of ./public as our main files
 app.use( express.static( path.join( __dirname, '/public' ) ) );
@@ -63,16 +76,18 @@ let appEnv = cfenv.getAppEnv();
 
 
 // home page is in /checkout.html
-app.get( '/', function ( req, res )
-{
-    res.sendFile( path.resolve( 'public/checkout.html' ) );
-} );
+// app.get( '/', function ( req, res )
+// {
+//     res.sendFile( path.resolve( 'public/checkout.html' ) );
+// } );
 
 
 // routes to direct to gate way
 // get banks Step1
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
+
+
     let request_url = gateway_url + 'banks';
     // console.log( request_url );
     // console.log( req.headers );
@@ -102,9 +117,12 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
 
 } );
 
+let oauthcomplete = false
 // payment initiations step 2
 app.post( '/gateway/open-banking/payments', function ( req, res )
 {
+    oauthcomplete = false
+
     ssn = req.session
 
     let request_url = gateway_url + 'payments'
@@ -220,6 +238,18 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     } );
 } );
 
+
+
+app.get( '/checkauthcomplete', function ( req, res )
+{
+    res.send(oauthcomplete ? 200 : 400)
+
+    if(oauthcomplete)
+    {
+        oauthcomplete = false
+    }
+})
+
 // TODO this really needs to be paymentSubmission to Banksy.  I do not handle getting the token
 app.get( '/oauth/callback', function ( req, res )
 {
@@ -246,23 +276,34 @@ app.get( '/oauth/callback', function ( req, res )
 
     let url =  gateway_url + 'oauth';
 
-    res.redirect('/paymentcomplete')
+    //console.log('REDIRECT')
+    //res.redirect( 'http://localhost:8080/index.html#/cart' );
+    //res.sendFile(path.join(__dirname, 'client/build/index.html'))
 
-    // fetch( url,
-    //     {
-    //         method: 'POST',
-    //         body: data
-    //     } )
-    //     .then( response =>
-    //     {
-    //         // TODO check that there is a 302 status code
-    //         res.redirect('/paymentcomplete')
-    //     } )
-    //     .catch( error =>
-    //     {
-    //         console.log( error )
-    //     } )
+
+
+
+    fetch( url,
+        {
+            method: 'POST',
+            body: data
+        } )
+        .then( response =>
+        {
+            // TODO check that there is a 302 status code
+            // TODO get server side routing for react working... this is pure garbage
+            oauthcomplete = true
+            //res.redirect('/paymentcomplete')
+        } )
+        .catch( error =>
+        {
+            console.log( error )
+        } )
 } );
+
+app.get( '/test' , function( req, res ) {
+    oauthcomplete = true
+})
 
 app.get( '/redirect_bank_login', function( req, res ) {
 
