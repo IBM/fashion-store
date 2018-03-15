@@ -1,10 +1,10 @@
 import { handleActions } from 'redux-actions'
 
-import { addItemToCart, receiveBanks, bankSelected, paymentInitiated, paymentLoginCompleted } from '../actions/store.actions'
+import { paymentCompleted, addItemToCart, receiveBanks, bankSelected, paymentInitiatedReceived, bankLoginCompleted, paymentInitiationSent } from '../actions/store.actions'
 
 import _ from 'lodash'
 
-const initialState = { cartItems: [], numItems: 0, banks: [] }
+const initialState = { cartItems: [], numItems: 0, banks: [], paymentLoginInitiated: false, bankLoginCompleted: false, purchasedItems:[] }
 
 export default handleActions(
     {
@@ -48,15 +48,45 @@ export default handleActions(
             selectedBank: action.payload
         }),
 
-        [paymentInitiated]: (state, action) => ({
+        [paymentInitiatedReceived]: (state, action) => ({
             ...state,
-            paymentMethodLoginUrl: action.payload
+            paymentMethodLoginUrl: action.payload,
+            paymentLoginInitiated: false,
         }),
 
-        [paymentLoginCompleted]: (state, action) => ({
-            ...state,
-            paymentMethodLoginUrl: null
-        }),
+        [bankLoginCompleted]: ( state, action) => {
+            let cartItems = { ...state }.cartItems
+            let purchaseTotal = { ...state }.total
+            return {
+                ...state,
+                paymentMethodLoginUrl: null,
+                bankLoginCompleted: action.payload,
+            }
+        },
+
+        [paymentCompleted]: ( state, action) => {
+            let cartItems = { ...state }.cartItems
+            let purchaseTotal = { ...state }.total
+            return {
+                ...state,
+                paymentMethodLoginUrl: null,
+                purchasedItems: cartItems,
+                purchaseTotal: purchaseTotal,
+                cartItems: [],
+                numItems: 0,
+                total: 0,
+            }
+        },
+
+        [paymentInitiationSent]: (state, action) => {
+            return {
+                ...state,
+                paymentLoginInitiated: true,
+                bankLoginCompleted: false,
+            }
+        },
+
+
 
     },
     initialState,

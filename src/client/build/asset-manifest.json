@@ -1,7 +1,17 @@
 {
-  "main.css": "static/css/main.c17080f1.css",
-  "main.css.map": "static/css/main.c17080f1.css.map",
-  "main.js": "static/js/main.ee7b2412.js",
-  "main.js.map": "static/js/main.ee7b2412.js.map",
-  "static/media/logo.svg": "static/media/logo.5d5d9eef.svg"
+  "main.css": "static/css/main.e6e5c37d.css",
+  "main.css.map": "static/css/main.e6e5c37d.css.map",
+  "main.js": "static/js/main.830b8ed7.js",
+  "main.js.map": "static/js/main.830b8ed7.js.map",
+  "static/media/bank_icon.jpg": "static/media/bank_icon.81ab3fca.jpg",
+  "static/media/brownleatheroxfords01.jpg": "static/media/brownleatheroxfords01.bb319280.jpg",
+  "static/media/cobalt01.png": "static/media/cobalt01.2e086487.png",
+  "static/media/greyspottedbowtie01.jpeg": "static/media/greyspottedbowtie01.ec85a113.jpeg",
+  "static/media/lightbluelinen01.png": "static/media/lightbluelinen01.834be18b.png",
+  "static/media/logo.svg": "static/media/logo.5d5d9eef.svg",
+  "static/media/redturtlenecksweater01.jpeg": "static/media/redturtlenecksweater01.f734e535.jpeg",
+  "static/media/rosepinksweater01.jpeg": "static/media/rosepinksweater01.282f2364.jpeg",
+  "static/media/store-main.jpg": "static/media/store-main.5ab0d877.jpg",
+  "static/media/whiteshirt01.jpeg": "static/media/whiteshirt01.26f87488.jpeg",
+  "static/media/yellowjumpsuit01.jpeg": "static/media/yellowjumpsuit01.ea7e9d2c.jpeg"
 }

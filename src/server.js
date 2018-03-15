@@ -40,6 +40,19 @@ let cfenv = require( 'cfenv' );
 let app = express();
 
 app.use('/', express.static(`${__dirname}/client/build`));
+//[^api|^gateway|^test|^redirect|^oauth]
+// app.get('/*', (req,res) => {
+//     res.sendFile(path.join(__dirname+'/client/build/index.html'))
+// })
+
+
+// app.get('/store', function(req, res) {
+//     res.sendFile(path.join(__dirname, 'client/build/index.html'), function(err) {
+//         if (err) {
+//             res.status(500).send(err)
+//         }
+//     })
+// })
 
 // serve the files out of ./public as our main files
 app.use( express.static( path.join( __dirname, '/public' ) ) );
@@ -63,16 +76,18 @@ let appEnv = cfenv.getAppEnv();
 
 
 // home page is in /checkout.html
-app.get( '/', function ( req, res )
-{
-    res.sendFile( path.resolve( 'public/checkout.html' ) );
-} );
+// app.get( '/', function ( req, res )
+// {
+//     res.sendFile( path.resolve( 'public/checkout.html' ) );
+// } );
 
 
 // routes to direct to gate way
 // get banks Step1
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
+
+
     let request_url = gateway_url + 'banks';
     // console.log( request_url );
     // console.log( req.headers );
@@ -102,63 +117,70 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
 
 } );
 
+let oauthcomplete = false
 // payment initiations step 2
 app.post( '/gateway/open-banking/payments', function ( req, res )
 {
+    oauthcomplete = false
+
     ssn = req.session
 
-    let tempData = {}
     let request_url = gateway_url + 'payments'
 
     console.log( request_url )
 
-    let bodyTemp = JSON.stringify( req.body )
-    bodyTemp = JSON.parse( bodyTemp )
-
-
     let amount = req.body.amount
     let currency = req.body.currency
-    let bankId = req.body.bankId
+    let bankId = req.header( "bankID" )
     ssn.bankId = bankId
 
     let paymentSetupRequest = {
         "Data": {
             "Initiation": {
-                "InstructionIdentification": "ACME412",
-                "EndToEndIdentification": "FRESCO.21302.GFX.20",
+                "InstructionIdentification": "5791997839278080",
+                "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
-                    "Amount": amount,
-                    "Currency": currency
+                    "Amount": "700.00",
+                    "Currency": "EUR"
+                },
+                "DebtorAgent": {
+                    "SchemeName": "BICFI",
+                    "Identification": "AAAAGB2L"
+                },
+                "DebtorAccount": {
+                    "SchemeName": "IBAN",
+                    "Identification": "IE29AIBK93115212345678",
+                    "Name": "Gary Kean",
+                    "SecondaryIdentification": "6686302651023360"
+                },
+                "CreditorAgent": {
+                    "SchemeName": "BICFI",
+                    "Identification": "AAAAGB2K"
                 },
                 "CreditorAccount": {
-                    "SchemeName": "SortCodeAccountNumber",
-                    "Identification": "08080021325698",
-                    "Name": "ACME Inc",
-                    "SecondaryIdentification": "0002"
+                    "SchemeName": "IBAN",
+                    "Identification": "IE29AIBK93115212345676",
+                    "Name": "Carlo Marcoli",
+                    "SecondaryIdentification": "8380390651723776"
                 },
                 "RemittanceInformation": {
-                    "Reference": "FRESCO-101",
-                    "Unstructured": "Internal ops code 5120101"
+                    "Unstructured": "emeherpakkaodafeofiu",
+                    "Reference": "ehoorepre"
                 }
             }
         },
         "Risk": {
-            "PaymentContextCode": "EcommerceGoods",
-            "MerchantCategoryCode": "5967",
-            "MerchantCustomerIdentification": "053598653254",
+            "PaymentContextCode": "PersonToPerson",
+            "MerchantCategoryCode": "nis",
+            "MerchantCustomerIdentification": "1130294929260544",
             "DeliveryAddress": {
-                "AddressLine": [
-                    "Flat 7",
-                    "Acacia Lodge"
-                ],
-                "StreetName": "Acacia Avenue",
-                "BuildingNumber": "27",
-                "PostCode": "GU31 2ZZ",
-                "TownName": "Sparsholt",
-                "CountySubDivision": [
-                    "Wessex"
-                ],
-                "Country": "UK"
+                "AddressLine": ["totbelsanagrusa"],
+                "StreetName": "Morning Road",
+                "BuildingNumber": "62",
+                "PostCode": "G3 5HY",
+                "TownName": "Glasgow",
+                "CountrySubDivision": ["Scotland"],
+                "Country": "GB"
             }
         }
     }
@@ -196,12 +218,9 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
         console.log( 'body:', body ); // print the body
 
-        tempData.Data = response.body.Data;
-        tempData.Risk = response.body.Risk;
-
         paymentId = body.Data.PaymentId;
 
-        ssn.payment_data = JSON.stringify( tempData );
+        //ssn.payment_data = JSON.stringify( tempData );
 
         // TODO look for status code 302 and a redirectUrl
         // use that redirectUrl instead of the hard coded url below
@@ -218,6 +237,18 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         res.json( { redirect_url: redirectUrl } );
     } );
 } );
+
+
+
+app.get( '/checkauthcomplete', function ( req, res )
+{
+    res.send(oauthcomplete ? 200 : 400)
+
+    if(oauthcomplete)
+    {
+        oauthcomplete = false
+    }
+})
 
 // TODO this really needs to be paymentSubmission to Banksy.  I do not handle getting the token
 app.get( '/oauth/callback', function ( req, res )
@@ -244,6 +275,14 @@ app.get( '/oauth/callback', function ( req, res )
 
 
     let url =  gateway_url + 'oauth';
+
+    //console.log('REDIRECT')
+    //res.redirect( 'http://localhost:8080/index.html#/cart' );
+    //res.sendFile(path.join(__dirname, 'client/build/index.html'))
+
+
+
+
     fetch( url,
         {
             method: 'POST',
@@ -252,13 +291,19 @@ app.get( '/oauth/callback', function ( req, res )
         .then( response =>
         {
             // TODO check that there is a 302 status code
-            res.redirect('/redirect_payment_complete')
+            // TODO get server side routing for react working... this is pure garbage
+            oauthcomplete = true
+            //res.redirect('/paymentcomplete')
         } )
         .catch( error =>
         {
             console.log( error )
         } )
 } );
+
+app.get( '/test' , function( req, res ) {
+    oauthcomplete = true
+})
 
 app.get( '/redirect_bank_login', function( req, res ) {
 
@@ -273,7 +318,7 @@ app.get( '/redirect_bank_login', function( req, res ) {
 app.get( '/redirect_payment_complete', function ( req, res )
 {
     // add bank login here
-    let options = {
+    /*let options = {
         method: 'POST',
         url: gateway_url + 'payment-submissions',
         headers:
@@ -304,7 +349,9 @@ app.get( '/redirect_payment_complete', function ( req, res )
 
         // send the completed file
         res.redirect( '/paymentcomplete.html' );
-    } );
+    } );*/
+
+    res.redirect( '/paymentcomplete.html' );
 } );
 
 // the cfenv library will not reflect a change to the port in it's url

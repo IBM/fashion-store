@@ -5,7 +5,7 @@ import _ from 'lodash'
 import { Media, Row, Col, Button, Image, Modal, OverlayTrigger } from 'react-bootstrap';
 
 import { connect } from 'react-redux'
-import { fetchBanks, bankSelected, sendPayment } from '../actions/store.actions'
+import { fetchBanks, bankSelected, sendPayment, paymentCompleted } from '../actions/store.actions'
 
 const BankSelector = ( { bank, selectedBank, dispatch } ) =>
 {
@@ -25,11 +25,6 @@ const BankSelector = ( { bank, selectedBank, dispatch } ) =>
     )
 }
 
-const BankLogin = ({ bank }) => (
-    <div>
-
-    </div>
-)
 
 const Banks = ( { banks, selectedBank, dispatch } ) => (
 
@@ -68,6 +63,7 @@ class Checkout extends React.Component
         this.state = { paymentMethod: null }
     }
 
+
     //TODO fetch bank on component load
     render()
     {
@@ -82,11 +78,11 @@ class Checkout extends React.Component
 
                     <Row>
                         <Col xs={6} md={6}>
-                            <Image responsive src={require( '../images/bank_icon.jpg' )} rounded
+                            <Image style={{height: 150}} responsive src={require( '../images/bank_icon.jpg' )} rounded
                                    onClick={() => this.setState( { paymentMethod: 'bank' } )}/>
                         </Col>
                         <Col xs={6} md={6}>
-                            <Image responsive src={require( '../images/visa-and-mastercard.gif' )} rounded
+                            <Image style={{height: 150}} responsive src={require( '../images/visa-and-mastercard.gif' )} rounded
                                    onClick={() => this.setState( { paymentMethod: 'creditcard' } )}/>
                         </Col>
                     </Row>
@@ -119,5 +115,6 @@ export default connect( state =>
         banks: state.store.banks,
         selectedBank: state.store.selectedBank,
         total: state.store.total,
+        bankLoginCompleted: state.store.bankLoginCompleted,
     }
 } )( Checkout )

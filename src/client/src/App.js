@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-import Header from './components/Header'
+import { hot } from 'react-hot-loader'
 import Cart from './components/Cart'
 import Main from './components/Main'
 import Shop from './components/Shop'
@@ -10,7 +10,7 @@ import PaymentComplete from './components/PaymentComplete'
 
 import { Switch, Route } from 'react-router-dom'
 import { Provider } from 'react-redux'
-
+import history from './history';
 import store from './store'
 
 class App extends Component {
@@ -18,7 +18,7 @@ class App extends Component {
     return (
         <Provider store={store}>
           <div className="App">
-              <Switch>
+              <Switch history={history}>
                   <Route exact path='/' component={Main}/>
                   <Route path='/cart' component={Cart}/>
                   <Route path='/shop' component={Shop}/>
@@ -30,4 +30,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default hot(module)(App);

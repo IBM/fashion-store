@@ -1,11 +1,19 @@
 import { createAction } from 'redux-actions'
+import history from '../history';
 
 export const addItemToCart = createAction( 'ADD_ITEM_TO_CART' )
 export const exampleAction2 = createAction( 'EXAMPLE_ACTION2' )
 export const receiveBanks = createAction( 'RECEIVE_BANKS' )
 export const bankSelected = createAction( 'BANK_SELECTED' )
-export const paymentInitiated = createAction( 'PAYMENT_INITIATED' )
-export const paymentLoginCompleted = createAction( 'PAYMENT_LOGIN_COMPLETED' )
+
+export const bankLoginCompleted = createAction( 'BANK_LOGIN_COMPLETED' )
+
+export const paymentInitiationSent = createAction( 'PAYMENT_INITIATED_SENT' )
+export const paymentInitiatedReceived = createAction( 'PAYMENT_INITIATED_RECEIVED' )
+
+export const paymentCompleted = createAction( 'PAYMENT_COMPLETED' )
+
+
 
 function url()
 {
@@ -50,28 +58,62 @@ export function sendPayment( bank, amount )
     return dispatch =>
     {
 
+        dispatch(paymentInitiationSent())
+
         return fetch( '/gateway/open-banking/payments', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'bankid' : bank.BankID,
+            },
             body: JSON.stringify({
-                bankId: bank.BankID,
                 amount,
                 currency: 'GBP'
             })
         } )
-            .then( response => {
-                if(response.status !== 302)
+            .then( response =>
+            {
+                if(response.status !== 200)
                 {
-                    throw "Server errror: " + response.status
+                    throw "bad status: " + response.status
                 }
 
                 return response.json()
             } )
             .then( json =>
             {
-                dispatch( paymentInitiated( json.redirect_url ) )
+
+                dispatch( paymentInitiatedReceived( json.redirect_url ) )
+
+                // setTimeout(()=>{
+                //     fetch('test')
+                // }, 0)
+
+                pollForAuthComplete(dispatch)
+
+                // //TODO THIS IS TEST CODE REMOVE THIS CRAP
+                // setTimeout(()=>{
+                //     fetch('/oauth/callback?code=98702319847@accountno=asdfasdf23')
+                // }, 2000)
             } );
     }
+}
+
+function pollForAuthComplete(dispatch)
+{
+    fetch('/checkauthcomplete')
+        .then( response => {
+            if(response.status === 200)
+            {
+                dispatch( bankLoginCompleted(true) )
+                dispatch( paymentCompleted(true) )
+            }
+            else {
+                setTimeout(()=>{
+                    pollForAuthComplete(dispatch)
+                }, 1000)
+            }
+        })
 }
 
 export function fetchBanksResponse( banks )
