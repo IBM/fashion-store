@@ -53,6 +53,7 @@ const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide
                         />
                     </div>
                 }
+  
             </div>
         </Modal.Body>
     </Modal>
