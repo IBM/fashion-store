@@ -29,7 +29,7 @@ const ItemRow = ( { item, dispatch } ) => (
             {item.qty}
         </Col>
         <Col xs={3} md={3}>
-            ${item.price}
+            £{item.price}
         </Col>
         <Col xs={1} md={1}/>
     </Row>
@@ -119,7 +119,7 @@ class Cart extends React.Component
                     <Row>
                         <Col xs={6} md={6}/>
                         <Col xs={3} md={3}>
-                            SUBTOTAL ${total}
+                            SUBTOTAL £{total}
                         </Col>
                         <Col xs={3} md={3}/>
                     </Row>
