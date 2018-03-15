@@ -9,7 +9,9 @@ let bodyParser = require( 'body-parser' );
 const url = require( "url" );
 let session = require( 'express-session' );
 let fetch = require( 'node-fetch' );
-const { URLSearchParams } = require( 'url' );
+const URLSearchParams = require( 'url-search-params' );
+
+let data = new URLSearchParams()
 
 let port = "8080";
 //let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
@@ -140,8 +142,8 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
                 "InstructionIdentification": "5791997839278080",
                 "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
-                    "Amount": "700.00",
-                    "Currency": "EUR"
+                    "Amount": amount + "",
+                    "Currency": currency
                 },
                 "DebtorAgent": {
                     "SchemeName": "BICFI",

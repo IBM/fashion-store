@@ -7,28 +7,31 @@ import { Row, Col, Image } from 'react-bootstrap';
 
 
 const Header = ( { numItems } ) => (
-    <div style={{marginBottom: 50}}>
-        <Image src={require('../images/herenow.png')}/>
+    <div style={{ width: "100%", marginTop: 10, marginBottom: 50 }}>
 
-        <div style={{ marginTop: 20 }}>
-            <Row className="show-grid" left>
-                <Col xs={6} md={2}>
-                    <div style={{align: 'left'}}>
-                        <Link to='/'>Store</Link>
-                    </div>
+        <Row>
+            <Col xs={1} md={1}/>
+            <Col xs={2} md={2} >
+            <Image src={require( '../images/herenow.png' )} style={{ height: 30 }} />
+            </Col>
+            <Col xs={9} md={9}/>
+        </Row>
 
-                </Col>
-                <Col xs={4} md={8}>
-                </Col>
-                <Col xs={6} md={2}>
-                    <Link to='/cart'>Cart({numItems})</Link>
-                </Col>
-            </Row>
-        </div>
+        <Row>
+            <Col xs={1} md={1}/>
+            <Col xs={2} md={2}>
+                <Link to='/'>Store</Link>
+            </Col>
+            <Col xs={6} md={6}/>
+            <Col xs={2} md={2}>
+                <Link to='/cart'>Cart({numItems})</Link>
+            </Col>
+            <Col xs={1} md={1}/>
+        </Row>
     </div>
 )
 
 export default connect( state =>
 {
-    return { numItems: state.store.numItems }
+    return {numItems: state.store.numItems}
 } )( Header )

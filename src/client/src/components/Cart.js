@@ -16,37 +16,36 @@ import Spinner from 'react-spinkit'
 // TODO dispatch is so they can remove items from the cart.  Low priority
 // TODO prob need row/col instead of media component so things line up better
 const ItemRow = ( { item, dispatch } ) => (
-    <Media>
-        <Media.Left>
-            <img width={64} height={64} src={item.url}/>
-        </Media.Left>
-        <Media.Body>
-            <Row>
-                <Col xs={4} md={4}>
-                    {item.title}
-                </Col>
-                <Col xs={4} md={4}>
-                    {item.qty}
-                </Col>
-                <Col xs={4} md={4}>
-                    ${item.price}
-                </Col>
-            </Row>
-        </Media.Body>
-    </Media>
+
+    <Row style={{ marginTop: 10 }}>
+        <Col xs={1} md={1}/>
+        <Col xs={2} md={2}>
+            <Image style={{ height: 50 }} src={item.url}/>
+        </Col>
+        <Col xs={2} md={2}>
+            {item.title}
+        </Col>
+        <Col xs={3} md={3}>
+            {item.qty}
+        </Col>
+        <Col xs={3} md={3}>
+            ${item.price}
+        </Col>
+        <Col xs={1} md={1}/>
+    </Row>
 )
 
 const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide } ) => (
     <Modal show={show}>
         <Modal.Body>
 
-            <div style={{width:450, height:600}}>
+            <div style={{ width: 450, height: 600 }}>
 
                 {paymentLoginInitiated ?
-                    <div  style={{left: '57%', top: '50%', position: 'relative'}}>
+                    <div style={{ left: '57%', top: '50%', position: 'relative' }}>
                         <Spinner name='double-bounce'/>
                     </div> :
-                    <div style={{position: 'absolute', left: 70, }}>
+                    <div style={{ position: 'absolute', left: 70, }}>
                         <Iframe url={paymentMethodLoginUrl}
 
                                 width="450px"
@@ -57,7 +56,7 @@ const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide
 
 
                 <Button onClick={onHide}
-                    style={{position: 'absolute', left: 250, bottom: 10}}>Cancel</Button>
+                        style={{ position: 'absolute', left: 250, bottom: 10 }}>Cancel</Button>
             </div>
         </Modal.Body>
     </Modal>
@@ -72,11 +71,11 @@ class Cart extends React.Component
         this.state = { showCheckout: false }
     }
 
-    componentWillReceiveProps(nextProps)
+    componentWillReceiveProps( nextProps )
     {
-        if(nextProps.bankLoginCompleted)
+        if ( nextProps.bankLoginCompleted )
         {
-            this.props.history.push("/paymentcomplete");
+            this.props.history.push( "/paymentcomplete" );
         }
     }
 
@@ -86,54 +85,69 @@ class Cart extends React.Component
 
 
         return (
-            <div style={{ margin: 50 }}>
+            <div>
                 <Header/>
+                <div style={{ margin: 50 }}>
+                    <div style={{ margin: 20 }}>
+                        SHOPPING CART
+                    </div>
 
-                <div style={{ margin: 20 }}>
-                    SHOPPING CART
-                </div>
-                <Row>
-                    <Col xs={4} md={4}>
-                        ITEM
-                    </Col>
-                    <Col xs={4} md={4}>
-                        QTY.
-                    </Col>
-                    <Col xs={4} md={4}>
-                        PRICE
-                    </Col>
-                </Row>
+                    <div style={{ marginLeft: 50, marginRight: 50 }}>
+                        <Row>
+                            <Col xs={1} md={1}/>
+                            <Col xs={3} md={3}>
+                                ITEM
+                            </Col>
+                            <Col xs={1} md={1}/>
+                            <Col xs={3} md={3}>
+                                QTY.
+                            </Col>
+                            <Col xs={1} md={1}/>
+                            <Col xs={1} md={1}>
+                                PRICE
+                            </Col>
+                            <Col xs={1} md={1}/>
+                            <Col xs={1} md={1}/>
+                        </Row>
 
-                <hr/>
-                {cartItems.map( ( item, i ) => <ItemRow key={i} item={item} dispatch={dispatch}/> )}
+                        <hr/>
 
-                <Row>
-                    <Col md={8}/>
-                    <Col md={4}>
-                        SUBTOTAL ${total}
-                    </Col>
-                </Row>
-                <hr/>
+                        {cartItems.map( ( item, i ) => <ItemRow key={i} item={item} dispatch={dispatch}/> )}
 
-                <Button onClick={() =>
-                {
-                    dispatch( fetchBanks() )
-                    this.setState( { showCheckout: true } )
-                }}
-                        disabled={!total || total <= 0}
-                >CHECKOUT</Button>
+                    </div>
 
+                    <Row>
+                        <Col xs={6} md={6}/>
+                        <Col xs={3} md={3}>
+                            SUBTOTAL ${total}
+                        </Col>
+                        <Col xs={3} md={3}/>
+                    </Row>
+                    <hr/>
 
-                <Checkout
-                    onHide={() => {
-                        this.setState( { showCheckout: false } )
+                    <Button onClick={() =>
+                    {
+                        dispatch( fetchBanks() )
+                        this.setState( { showCheckout: true } )
                     }}
-                    show={this.state.showCheckout}
-                />
+                            disabled={!total || total <= 0}
+                    >CHECKOUT</Button>
 
-                <BankLogin show={paymentLoginInitiated || !!paymentMethodLoginUrl} paymentLoginInitiated={paymentLoginInitiated} paymentMethodLoginUrl={paymentMethodLoginUrl}
-                           onHide={()=>dispatch(bankLoginCompleted(null))}
-                />
+
+                    <Checkout
+                        onHide={() =>
+                        {
+                            this.setState( { showCheckout: false } )
+                        }}
+                        show={this.state.showCheckout}
+                    />
+
+                    <BankLogin show={paymentLoginInitiated || !!paymentMethodLoginUrl}
+                               paymentLoginInitiated={paymentLoginInitiated}
+                               paymentMethodLoginUrl={paymentMethodLoginUrl}
+                               onHide={() => dispatch( bankLoginCompleted( null ) )}
+                    />
+                </div>
             </div>
         )
     }

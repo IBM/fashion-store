@@ -1,11 +1,19 @@
+
 import React from 'react';
 import Header from './Header'
 import { Media, Row, Col, Thumbnail, Button } from 'react-bootstrap';
 import _ from 'lodash'
 
-import { connect } from 'react-redux'
 
+import { connect } from 'react-redux'
 import {addItemToCart} from '../actions/store.actions'
+
+let Masonry = require('react-masonry-component')
+var masonryOptions = {
+    transitionDuration: 0
+};
+
+
 const storeItems = [
     {
         title: 'Cobalt Blue Blazer',
@@ -65,34 +73,34 @@ const storeItems = [
     }
 ]
 
-const StoreRow = ( { items, dispatch } ) =>
+const StoreRow = ( { item, dispatch } ) =>
     (
-        <Row>
-            <Col xs={2} md={2}/>
-            {items.map( item =>
-                (
-
-                    <Col xs={4} md={4} >
-                        <Thumbnail src={item.url} responsive>
-                            <h3>{item.title}</h3>
-                            <p>{item.description}</p>
-                            <p>${item.price}</p>
-                            <p>
-                                <Button bsStyle="primary" onClick={()=>dispatch(addItemToCart(item))}>add to cart</Button>
-                            </p>
-                        </Thumbnail>
-                    </Col>
-                )
-            )}
-            <Col xs={2} md={2}/>
-        </Row>
+        <Thumbnail src={item.url} responsive style={{margin: 20, width:220}}>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+            <p>${item.price}</p>
+            <p>
+                <Button bsStyle="primary" onClick={()=>dispatch(addItemToCart(item))}>add to cart</Button>
+            </p>
+        </Thumbnail>
     )
 
 const Store = ({dispatch}) => (
-    <div style={{ margin: 50 }}>
+    <div>
         <Header/>
 
-        {_.chunk(storeItems, 2).map( (items, index) => <StoreRow key={index} items={items} dispatch={dispatch}/>)}
+    <div style={{ width: "100%", margin: 50, alignItems: 'center', alignContent: 'center', alignSelf:'center' }}>
+        <Masonry
+            className={'my-gallery-class'} // default ''
+            elementType={'ul'} // default 'div'
+            options={masonryOptions} // default {}
+            disableImagesLoaded={false} // default false
+            updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+        >
+            {storeItems.map( (item, index) => <StoreRow key={index} item={item} dispatch={dispatch}/>)}
+        </Masonry>
+    </div>
+
     </div>
 )
 
