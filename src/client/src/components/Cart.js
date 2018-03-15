@@ -20,7 +20,7 @@ const ItemRow = ( { item, dispatch } ) => (
     <Row style={{ marginTop: 10 }}>
         <Col xs={1} md={1}/>
         <Col xs={2} md={2}>
-            <Image style={{ height: 50 }} src={item.url}/>
+            <Image rounded style={{ height: 50 }} src={item.url}/>
         </Col>
         <Col xs={2} md={2}>
             {item.title}
@@ -39,17 +39,17 @@ const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide
     <Modal show={show}>
         <Modal.Body>
 
-            <div style={{ width: 450, height: 600 }}>
+            <div style={{ width: 598, height: 550 }}>
 
                 {paymentLoginInitiated ?
-                    <div style={{ left: '57%', top: '50%', position: 'relative' }}>
+                    <div style={{ left: '45%', top: '50%', position: 'relative' }}>
                         <Spinner name='double-bounce'/>
                     </div> :
-                    <div style={{ position: 'absolute', left: 70, }}>
+                    <div style={{ position: 'absolute', left: 0, }}>
                         <Iframe url={paymentMethodLoginUrl}
 
-                                width="450px"
-                                height="550px"
+                                width="598px"
+                                height="560px"
                         />
                     </div>
                 }
