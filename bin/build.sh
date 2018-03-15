@@ -16,7 +16,7 @@ done
 cp -f ../build/Dockerfile ..
 
 cd ..
-docker build --no-cache --build-arg "PORT=$PORT" -t shoe-store .
+docker build --no-cache --build-arg "PORT=$PORT" -t fashion-store .
 
 rm -f Dockerfile
 

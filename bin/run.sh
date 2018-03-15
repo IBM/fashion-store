@@ -20,10 +20,10 @@ while getopts "x:g:e:i:p:" option; do
     esac
 done
 
-docker stop shoes
+docker stop fashion
 
 #do the build for you then start
 ./build.sh -p $EXTERNALPORT
 
-#docker run -d --rm --name shoes -p $EXTERNALPORT:8080 -e "GATEWAYURL=$GATEWAYURL" shoe-store
-docker run -d --restart always --name shoes -p $EXTERNALPORT:8080 -e "GATEWAYURL=$GATEWAYURL" -e "EXTERNALURL=$EXTERNALURL" shoe-store
+#docker run -d --rm --name fashion -p $EXTERNALPORT:8080 -e "GATEWAYURL=$GATEWAYURL" shoe-store
+docker run -d --restart always --name fashion -p $EXTERNALPORT:8080 -e "GATEWAYURL=$GATEWAYURL" -e "EXTERNALURL=$EXTERNALURL" fashion-store

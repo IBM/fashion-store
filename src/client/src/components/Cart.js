@@ -55,8 +55,6 @@ const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide
                 }
 
 
-                <Button onClick={onHide}
-                        style={{ position: 'absolute', left: 250, bottom: 10 }}>Cancel</Button>
             </div>
         </Modal.Body>
     </Modal>
