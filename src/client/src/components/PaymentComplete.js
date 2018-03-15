@@ -18,7 +18,7 @@ const ItemRow = ( { item } ) => (
             {item.qty}
         </Col>
         <Col xs={3} md={3}>
-            ${item.price}
+            £{item.price}
         </Col>
     </Row>
     </div>
@@ -53,7 +53,7 @@ class PaymentComplete extends React.Component {
                         {purchasedItems.map( ( item, i ) => <ItemRow key={i} item={item}/> )}
                     </div>
                     <div style={{ margin: 50 }}>
-                        Total: ${purchaseTotal}
+                        Total: £{purchaseTotal}
                     </div>
                 </div>
             </div>
@@ -73,7 +73,7 @@ class PaymentComplete extends React.Component {
 //                 {purchasedItems.map( ( item, i ) => <ItemRow key={i} item={item}/> )}
 //             </div>
 //             <div style={{ margin: 50 }}>
-//                 Total: ${purchaseTotal}
+//                 Total: £{purchaseTotal}
 //             </div>
 //         </div>
 //     </div>

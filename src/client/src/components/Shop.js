@@ -78,7 +78,7 @@ const StoreRow = ( { item, dispatch } ) =>
         <Thumbnail src={item.url} responsive style={{margin: 20, width:220}}>
             <h3>{item.title}</h3>
             <p>{item.description}</p>
-            <p>${item.price}</p>
+            <p>£{item.price}</p>
             <p>
                 <Button bsStyle="primary" onClick={()=>dispatch(addItemToCart(item))}>add to cart</Button>
             </p>
