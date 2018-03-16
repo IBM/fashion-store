@@ -18,7 +18,13 @@ RUN npm install
 # Bundle app source
 COPY ./src/ .
 
+WORKDIR /usr/src/app/client
+
+CMD ["npm", "run", "build"]
+
+WORKDIR /usr/src/app
+
 #EXPOSE 8080
 EXPOSE ${PORT}
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "server" ]
