@@ -68,7 +68,7 @@ export function sendPayment( bank, amount )
             },
             body: JSON.stringify({
                 amount,
-                currency: 'GBP'
+                currency: 'EUR'
             })
         } )
             .then( response =>
