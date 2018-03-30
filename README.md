@@ -1,4 +1,4 @@
-# shoe-store-website
+# fashion-store-website
 
 # TODO
 1. save hostname & port as a config file to be read by app.js
@@ -24,7 +24,7 @@ Where GATEWAYURL is the apicontroller.  It must be in the form of http://9.30.20
 
 Note: You don't need the / at the end anymore.
 
-Just make sure the shoe container can reach the apicontroller container.
+Just make sure the fashion container can reach the apicontroller container.
 
 # Execute Manually
 * go to ./src
