@@ -1,2 +1,2 @@
 #
-image: artemis1.fyre.ibm.com:5000/banksy-ns/shoe-store:latest
+image: ip-banksy-repo1-docker-local.artifactory.swg-devops.com/ip-banksy-repo1-docker-local/fashion-store:latest

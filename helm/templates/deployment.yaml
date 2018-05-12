@@ -1,0 +1,24 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata: 
+  name: fashion-store-deploy
+  namespace: banksy-ns
+  labels:
+    app: fashion-store
+spec:
+  replicas: 1
+  selector: 
+    matchLabels: 
+      app: fashion-store
+  template: 
+    metadata: 
+      labels: 
+        app: fashion-store
+    spec:
+      containers:
+      - name: fashion-store
+        image: artemis1.fyre.ibm.com:5000/banksy-ns/fashion-store:latest
+        ports: 
+        - name: fashion-store
+          protocol: TCP
+          containerPort: 8080

@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: shoe-store-configmap
+  name: fashion-store-configmap
 data:
   EXTERNALPORT: 8080
   INTERNALPORT: 8080
   PORT: 8080
-  GATEWAYURL: http://athena1.fyre.ibm.com:32756/open-banking
-  EXTERNALURL: http://localhost:8080
+  GATEWAYURL: http://your-gateway-host:your-gateway-port/open-banking
+  EXTERNALURL: http://your-external-host:your-external-port
