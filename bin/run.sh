@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #README:
-#usage: ./run.sh -e 5000 -g http://athena1.fyre.ibm.com:8400/open-banking -x http://athena1.fyre.ibm.com:9090
+#usage: ./run.sh -e 5000 -g http://192.168.1.6:8400/open-banking -x http://192.168.1.6:9090
 
 EXTERNALPORT=8080
 INTERNALPORT=8080
 PORT=8080
-GATEWAYURL="http://athena1.fyre.ibm.com:32756/open-banking"
-EXTERNALURL="http://localhost:8080"
+GATEWAYURL="http://192.168.1.6:32756/open-banking"
+EXTERNALURL="http://192.168.1.6:8080"
 
 while getopts "x:g:e:i:p:" option; do
     case ${option}

@@ -84,13 +84,13 @@ export function sendPayment( bank, amount )
             {
 
                 console.log('BANK LOGIN URL: ' + json.redirect_url )
-                dispatch( paymentInitiatedReceived( json.redirect_url ) )
+                dispatch( paymentInitiatedReceived( json ) )
 
                 // setTimeout(()=>{
                 //     fetch('test')
                 // }, 0)
 
-                pollForAuthComplete(dispatch)
+                // pollForAuthComplete(dispatch)
 
                 // //TODO THIS IS TEST CODE REMOVE THIS CRAP
                 // setTimeout(()=>{

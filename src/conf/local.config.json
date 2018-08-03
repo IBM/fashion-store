@@ -1,0 +1,7 @@
+{
+  "EXTERNALPORT": 8080,
+  "INTERNALPORT": 8080,
+  "PORT": 8080,
+  "GATEWAYURL": "http://9.66.219.53:8400/open-banking/v1.1/",
+  "EXTERNALURL": "http://9.66.219.53:8080"
+}
