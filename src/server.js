@@ -26,7 +26,9 @@ console.log( 'external url: %s', external_url )
 
 
 // TODO get the merchantID from the merchant-onboarding api since it will be different per local system
-const merchantId = 'e219e47476770c9cbcf9cb26f40046cc'
+//const xFapiFinancialId = config.xFapiFinancialId
+const merchantId = config.merchantId
+
 let code = null
 
 let cfenv = require( 'cfenv' )
@@ -98,11 +100,61 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
     console.log( url )
 
-    let amount = req.body.amount
+    let amount = req.body.amount + ''   // make sure it is a string
     let currency = req.body.currency
-    let xFapiFinancialId = req.headers[ 'x-fapi-financial-id' ]
 
-    let paymentSetupRequest = req.body
+    let financialId = req.headers['x-fapi-financial-id']
+
+    let paymentSetupRequest = {
+        "Data": {
+            "Initiation": {
+                "InstructionIdentification": "5791997839278080",
+                "EndToEndIdentification": "8125371765489664",
+                "InstructedAmount": {
+                    "Amount": amount,
+                    "Currency": currency
+                },
+                "DebtorAgent": {
+                    "SchemeName": "BICFI",
+                    "Identification": "AAAAGB2L"
+                },
+                "DebtorAccount": {
+                    "SchemeName": "IBAN",
+                    "Identification": "IE29AIBK93115212345678",
+                    "Name": "Gary Kean",
+                    "SecondaryIdentification": "6686302651023360"
+                },
+                "CreditorAgent": {
+                    "SchemeName": "BICFI",
+                    "Identification": "AAAAGB2K"
+                },
+                "CreditorAccount": {
+                    "SchemeName": "IBAN",
+                    "Identification": "IE29AIBK93115212345676",
+                    "Name": "TESTING STUPID TEST FACE",
+                    "SecondaryIdentification": "8380390651723776"
+                },
+                "RemittanceInformation": {
+                    "Unstructured": "emeherpakkaodafeofiu",
+                    "Reference": "ehoorepre"
+                }
+            }
+        },
+        "Risk": {
+            "PaymentContextCode": "PersonToPerson",
+            "MerchantCategoryCode": "nis",
+            "MerchantCustomerIdentification": "1130294929260544",
+            "DeliveryAddress": {
+                "AddressLine": ["totbelsanagrusa"],
+                "StreetName": "Morning Road",
+                "BuildingNumber": "62",
+                "PostCode": "G3 5HY",
+                "TownName": "Glasgow",
+                "CountrySubDivision": ["Scotland"],
+                "Country": "GB"
+            }
+        }
+    }
 
     let options = {
         "url": url,
@@ -111,11 +163,11 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "accept": "application/json",
             "content-type": "application/json",
             "x-fapi-customer-ip-address": 1,
-            "x-fapi-financial-id": xFapiFinancialId,
+            "x-fapi-financial-id": financialId,
             "x-fapi-interaction-id": 1,
             "x-idempotency-key": 1,
             "x-jws-signature": 1,
-            "merchantId": 'xxxx-10',
+            "merchantId": merchantId,
         },
         "body": paymentSetupRequest,
         json: true
@@ -143,10 +195,8 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
         console.log( '/payments response redirect_url: ' + redirectUrl )
 
-        res.json( {
-            paymentData: response.body,
-            redirect_url: redirectUrl
-        } )
+        // TODO might need to save the paymentId.... how will I know what payment data the code belongs to?
+        res.redirect( redirectUrl )
     } )
 } )
 

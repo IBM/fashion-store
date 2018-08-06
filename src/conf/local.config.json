@@ -2,6 +2,8 @@
   "EXTERNALPORT": 8080,
   "INTERNALPORT": 8080,
   "PORT": 8080,
-  "GATEWAYURL": "http://9.66.219.53:8400/open-banking/v1.1/",
-  "EXTERNALURL": "http://9.66.219.53:8080"
+  "GATEWAYURL": "http://localhost:8400/open-banking/v1.1/",
+  "EXTERNALURL": "http://localhost:8080",
+  "merchantId": "742b17d0-974c-11e8-9695-cd29bb03a13b",
+  "xFapiFinancialId": "0015800001041REAAY"
 }

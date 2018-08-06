@@ -64,7 +64,9 @@ export function sendPayment( bank, amount )
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'bankid' : bank.BankID,
+                //'bankid' : bank.BankID,
+                'x-fapi-financial-id': bank['x-fapi-financial-id']
+                // TODO get the xfapifinancial id from the bank - no longer need bankid
             },
             body: JSON.stringify({
                 amount,
