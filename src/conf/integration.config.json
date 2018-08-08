@@ -2,6 +2,7 @@
   "EXTERNALPORT": 8080,
   "INTERNALPORT": 8080,
   "PORT": 8080,
-  "GATEWAYURL": "http://25.2.192.214:32756/open-banking",
-  "EXTERNALURL": "http://25.2.192.214:8080"
+  "GATEWAYURL": "http://api-controller-svc.banksy-ns/open-banking",
+  "merchantId": "hnstorehq1",
+  "xFapiFinancialId": "0015800001041REAAY"
 }

@@ -19,11 +19,8 @@ let port = config.PORT
 //let gateway_url = 'http://localhost:8400/open-banking/' //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/'
 //let gateway_url = 'http://apollo11.fyre.ibm.com:8400/open-banking/'
 let gateway_url = config.GATEWAYURL || 'http://localhost:8400/open-banking/v1.1/'
-let external_url = config.EXTERNALURL || 'http://shoe-store-svc:8080/'
 
 console.log( ' gateway: %s', gateway_url )
-console.log( 'external url: %s', external_url )
-
 
 let paymentInits = {}
 
