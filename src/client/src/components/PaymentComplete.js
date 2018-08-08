@@ -1,8 +1,9 @@
 import React from 'react';
 import Header from './Header'
 
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
-import { bankLoginCompleted, paymentCompleted } from '../actions/store.actions'
+import {  paymentCompleted } from '../actions/store.actions'
 import { Media, Row, Col, Button, Image, Modal, OverlayTrigger } from 'react-bootstrap';
 
 const ItemRow = ( { item } ) => (
@@ -30,15 +31,24 @@ class PaymentComplete extends React.Component {
         super(props)
     }
 
+    shouldComponentUpdate()
+    {
+        console.log('hi')
+    }
+
     componentWillMount()
     {
-        // TODO more hacky crap because I am out of time
-        this.props.dispatch(bankLoginCompleted(false))
     }
 
     render()
     {
-        let { purchasedItems, purchaseTotal, dispatch } = {...this.props}
+        //let { purchasedItems, purchaseTotal, dispatch } = {...this.props}
+
+        let paymentId = window.location.search.split('=')[1] // TODO this is obvs error prone
+        let purchase = JSON.parse( localStorage.getItem( paymentId ) )
+
+        let total = purchase.total
+        let items = purchase.purchasedItems
 
         return (
             <div>
@@ -50,10 +60,10 @@ class PaymentComplete extends React.Component {
                     <h3>Your payment has been processed</h3>
 
                     <div style={{ marginTop: 50 }}>
-                        {purchasedItems.map( ( item, i ) => <ItemRow key={i} item={item}/> )}
+                        {items.map( ( item, i ) => <ItemRow key={i} item={item}/> )}
                     </div>
                     <div style={{ margin: 50 }}>
-                        Total: £{purchaseTotal}
+                        Total: £{total}
                     </div>
                 </div>
             </div>
@@ -79,7 +89,7 @@ class PaymentComplete extends React.Component {
 //     </div>
 // )
 
-export default connect( state =>
+export default withRouter(connect( state =>
 {
     return {
         purchasedItems: state.store.purchasedItems,
@@ -87,8 +97,7 @@ export default connect( state =>
         total: state.store.total,
         paymentMethodLoginUrl: state.store.paymentMethodLoginUrl,
         paymentLoginInitiated: state.store.paymentLoginInitiated,
-        bankLoginCompleted: state.store.bankLoginCompleted,
         purchaseTotal: state.store.purchaseTotal,
 
     }
-} )( PaymentComplete )
+} )( PaymentComplete ) )

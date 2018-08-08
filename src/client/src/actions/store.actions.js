@@ -6,7 +6,7 @@ export const exampleAction2 = createAction( 'EXAMPLE_ACTION2' )
 export const receiveBanks = createAction( 'RECEIVE_BANKS' )
 export const bankSelected = createAction( 'BANK_SELECTED' )
 
-export const bankLoginCompleted = createAction( 'BANK_LOGIN_COMPLETED' )
+
 
 export const paymentInitiationSent = createAction( 'PAYMENT_INITIATED_SENT' )
 export const paymentInitiatedReceived = createAction( 'PAYMENT_INITIATED_RECEIVED' )
@@ -14,68 +14,47 @@ export const paymentInitiatedReceived = createAction( 'PAYMENT_INITIATED_RECEIVE
 export const paymentCompleted = createAction( 'PAYMENT_COMPLETED' )
 
 
-
-function url()
-{
-    return 'www.url.com';
-}
-
-// export function fetchStuff()
-// {
-//     return dispatch =>
-//     {
-//         return fetch( url(), {
-//             method: 'GET',
-//             mode: 'cors',
-//             credentials: 'include',
-//             headers: {
-//                 'x-api-key': apiKey,
-//                 'Accept': 'application/json'
-//             }
-//         } )
-//             .then( response => response.json() )
-//             .then( json => dispatch( receiveBanks( json ) ) );
-//     };
-// }
-
 export function fetchBanks()
 {
     return dispatch =>
     {
         return fetch( '/gateway/open-banking/banks' )
             .then( response => response.json() )
-            .then( json =>
+            .then( banks =>
             {
-                dispatch( receiveBanks( json.Banks ) )
+                dispatch( receiveBanks( banks ) )
             } );
 
         // TODO handle error case
     };
 }
 
-export function sendPayment( bank, amount )
+export function sendPayment( bank, amount, cartItems )
 {
     return dispatch =>
     {
+        let purchasedItems = cartItems
 
-        dispatch(paymentInitiationSent())
+        dispatch( paymentInitiationSent() )
+
+        console.log( 'POST /payment initiated' )
 
         return fetch( '/gateway/open-banking/payments', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 //'bankid' : bank.BankID,
-                'x-fapi-financial-id': bank['x-fapi-financial-id']
+                'x-fapi-financial-id': bank[ 'x-fapi-financial-id' ]
                 // TODO get the xfapifinancial id from the bank - no longer need bankid
             },
-            body: JSON.stringify({
+            body: JSON.stringify( {
                 amount,
                 currency: 'EUR'
-            })
+            } )
         } )
             .then( response =>
             {
-                if(response.status !== 200)
+                if ( response.status !== 200 )
                 {
                     throw "bad status: " + response.status
                 }
@@ -84,43 +63,42 @@ export function sendPayment( bank, amount )
             } )
             .then( json =>
             {
+                console.log( 'POST /payments completed: ' + JSON.stringify( json ) )
 
-                console.log('BANK LOGIN URL: ' + json.redirect_url )
-                dispatch( paymentInitiatedReceived( json ) )
+                let paymentId = json.paymentId
 
-                // setTimeout(()=>{
-                //     fetch('test')
-                // }, 0)
+                // TODO save to local storage
+                localStorage.setItem( paymentId, JSON.stringify( {
+                    total: amount,
+                    purchasedItems
+                } ) )
 
-                // pollForAuthComplete(dispatch)
+                console.log( 'BANK LOGIN URL: ' + json.redirect_url )
 
-                // //TODO THIS IS TEST CODE REMOVE THIS CRAP
-                // setTimeout(()=>{
-                //     fetch('/oauth/callback?code=98702319847@accountno=asdfasdf23')
-                // }, 2000)
+                window.location.href = json.redirect_url
             } );
     }
 }
 
-function pollForAuthComplete(dispatch)
+export function postPayment( query )
 {
-    fetch('/checkauthcomplete')
-        .then( response => {
-            if(response.status === 200)
-            {
-                dispatch( bankLoginCompleted(true) )
-                dispatch( paymentCompleted(true) )
-            }
-            else {
-                setTimeout(()=>{
-                    pollForAuthComplete(dispatch)
-                }, 1000)
-            }
-        })
-}
+    return dispatch =>
+    {
+        console.log( 'POST /payment-submissions initiated' )
 
-export function fetchBanksResponse( banks )
-{
-    return receiveBanks( banks )
-    //return { type: types.RECEIVE_BANKS, banks: json };
+        // TODO rename from oauth/callback
+        fetch( '/oauth/callback' + query )
+            .then( response => response.json() )
+            .then( json =>
+            {
+                console.log( 'POST /payment-submissions completed: ' + JSON.stringify( json ) )
+
+                let purchase = JSON.parse( localStorage.getItem( json.Data.PaymentId ) )
+
+                //history.push('/paymentcomplete')
+
+                window.location = '/paymentcomplete?paymentId=' + json.Data.PaymentId
+                dispatch( paymentCompleted( purchase ) )
+            } )
+    }
 }

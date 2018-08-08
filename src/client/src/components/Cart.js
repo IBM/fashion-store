@@ -8,7 +8,7 @@ import _ from 'lodash'
 import { Media, Row, Col, Button, Image, Modal, OverlayTrigger } from 'react-bootstrap';
 import Popup from "reactjs-popup";
 import Iframe from 'react-iframe'
-import { fetchBanks, bankSelected, sendPayment, bankLoginCompleted } from '../actions/store.actions'
+import { fetchBanks } from '../actions/store.actions'
 
 import Checkout from './Checkout'
 import Spinner from 'react-spinkit'
@@ -53,7 +53,7 @@ const BankLogin = ( { show, paymentMethodLoginUrl, paymentLoginInitiated, onHide
                         />
                     </div>
                 }
-  
+
             </div>
         </Modal.Body>
     </Modal>
@@ -70,10 +70,6 @@ class Cart extends React.Component
 
     componentWillReceiveProps( nextProps )
     {
-        if ( nextProps.bankLoginCompleted )
-        {
-            this.props.history.push( "/paymentcomplete" );
-        }
     }
 
     render()
@@ -142,7 +138,6 @@ class Cart extends React.Component
                     <BankLogin show={paymentLoginInitiated || !!paymentMethodLoginUrl}
                                paymentLoginInitiated={paymentLoginInitiated}
                                paymentMethodLoginUrl={paymentMethodLoginUrl}
-                               onHide={() => dispatch( bankLoginCompleted( null ) )}
                     />
                 </div>
             </div>
@@ -159,6 +154,5 @@ export default connect( state =>
         total: state.store.total,
         paymentMethodLoginUrl: state.store.paymentMethodLoginUrl,
         paymentLoginInitiated: state.store.paymentLoginInitiated,
-        bankLoginCompleted: state.store.bankLoginCompleted,
     }
 } )( Cart )

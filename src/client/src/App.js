@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import { hot } from 'react-hot-loader'
@@ -14,14 +13,15 @@ import { Provider } from 'react-redux'
 import history from './history';
 import store from './store'
 
+import { postPayment } from './actions/store.actions'
 class App extends Component
 {
     render()
     {
-
         if ( window.location.hash !== "" )
         {
-            fetch( '/oauth/callback' + window.location.hash.replace( '#', '?' ) )
+            store.dispatch( postPayment( window.location.hash.replace( '#', '?' ) ) )
+            //store.history.push('/paymentcomplete')
         }
 
         return (

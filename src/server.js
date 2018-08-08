@@ -11,10 +11,11 @@ const url = require( 'url' )
 let session = require( 'express-session' )
 let fetch = require( 'node-fetch' )
 const URLSearchParams = require( 'url-search-params' )
+var jwtDecode = require('jwt-decode')
 
 let data = new URLSearchParams()
 
-let port = '8080'
+let port = config.PORT
 //let gateway_url = 'http://localhost:8400/open-banking/' //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/'
 //let gateway_url = 'http://apollo11.fyre.ibm.com:8400/open-banking/'
 let gateway_url = config.GATEWAYURL || 'http://localhost:8400/open-banking/v1.1/'
@@ -24,6 +25,7 @@ console.log( ' gateway: %s', gateway_url )
 console.log( 'external url: %s', external_url )
 
 
+let paymentInits = {}
 
 // TODO get the merchantID from the merchant-onboarding api since it will be different per local system
 //const xFapiFinancialId = config.xFapiFinancialId
@@ -103,7 +105,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     let amount = req.body.amount + ''   // make sure it is a string
     let currency = req.body.currency
 
-    let financialId = req.headers['x-fapi-financial-id']
+    let xFapiFinancialId = req.headers['x-fapi-financial-id']
 
     let paymentSetupRequest = {
         "Data": {
@@ -111,8 +113,8 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
                 "InstructionIdentification": "5791997839278080",
                 "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
-                    "Amount": amount,
-                    "Currency": currency
+                    "Amount": "700.00",
+                    "Currency": "EUR"
                 },
                 "DebtorAgent": {
                     "SchemeName": "BICFI",
@@ -131,7 +133,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
                 "CreditorAccount": {
                     "SchemeName": "IBAN",
                     "Identification": "IE29AIBK93115212345676",
-                    "Name": "TESTING STUPID TEST FACE",
+                    "Name": "TESTING",
                     "SecondaryIdentification": "8380390651723776"
                 },
                 "RemittanceInformation": {
@@ -163,7 +165,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "accept": "application/json",
             "content-type": "application/json",
             "x-fapi-customer-ip-address": 1,
-            "x-fapi-financial-id": financialId,
+            "x-fapi-financial-id": xFapiFinancialId,
             "x-fapi-interaction-id": 1,
             "x-idempotency-key": 1,
             "x-jws-signature": 1,
@@ -187,6 +189,13 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             return
         }
 
+        let paymentId = response.body.Data.PaymentId
+
+        let paymentBody = paymentSetupRequest
+        paymentBody.Data.PaymentId = paymentId
+
+        paymentInits[paymentId] = { xFapiFinancialId: xFapiFinancialId, body: paymentBody }
+
         console.log( 'error:', error ) // Print the error if one occurred
         console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
         console.log( 'body:', body ) // print the body
@@ -196,7 +205,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         console.log( '/payments response redirect_url: ' + redirectUrl )
 
         // TODO might need to save the paymentId.... how will I know what payment data the code belongs to?
-        res.redirect( redirectUrl )
+        res.json( { paymentId, redirect_url: redirectUrl } )
     } )
 } )
 
@@ -250,27 +259,30 @@ app.post( '/gateway/open-banking/payment-submissions', function ( req, res )
 
 app.get( '/oauth/callback', function ( req, res )
 {
-    let url = gateway_url + 'payments-submissions'
-    let xFapiFinancialId = req.headers[ 'x-fapi-financial-id' ]
-    let code = req.headers.code
+    let url = gateway_url + 'payment-submissions'
+    let code = req.query.code
 
-    let paymentRequest = req.body
+    var decoded = jwtDecode(req.query.id_token)
+
+    let paymentId = decoded.openbanking_intent_id
+
+    let paymentRequest = paymentInits[paymentId]
+
+    let body = paymentRequest.body
 
     let options = {
-        "url": url,
-        "headers": {
+        url: url,
+        headers: {
             "authorization": "Bearer",
             "accept": "application/json",
             "content-type": "application/json",
-            "x-fapi-customer-ip-address": 1,
-            "x-fapi-financial-id": xFapiFinancialId,
+            "x-fapi-financial-id": paymentRequest.xFapiFinancialId,
             "x-fapi-interaction-id": 1,
             "x-idempotency-key": 1,
-            "x-jws-signature": 1,
-            "merchantId": 'xxxx-10',
+            "merchantId": merchantId,
             "code": code
         },
-        "body": paymentRequest,
+        body: body,
         json: true
     }
 
@@ -278,28 +290,17 @@ app.get( '/oauth/callback', function ( req, res )
     {
         if ( error )
         {
+            console.log( 'error:', error )
             res.status( 500 ).send( error )
             return
         }
 
-        if ( response.statusCode !== 302 )
-        {
-            res.sendStatus( 500 )
-            return
-        }
-
-        console.log( 'error:', error ) // Print the error if one occurred
+         // Print the error if one occurred
         console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
         console.log( 'body:', body ) // print the body
 
         res.json( response.body )
     } )
-} )
-
-//app.get( '/redirect_location', function ( req, res )
-app.get( '/redirect_payment_complete', function ( req, res )
-{
-    res.redirect( '/paymentcomplete.html' )
 } )
 
 // the cfenv library will not reflect a change to the port in it's url
@@ -312,62 +313,8 @@ if ( appEnv.isLocal )
 
 console.log( appEnv.port )
 // start server on the specified port and binding host
-module.exports = app.listen( appEnv.port, '0.0.0.0', function ()
+module.exports = app.listen( port, '0.0.0.0', function ()
 {
     // print a message when the server starts listening
     console.log( 'server starting on ' + appEnv.url )
 } )
-
-function getPaymentSetupRequest( amount, currency )
-{
-    return {
-        "Data": {
-            "Initiation": {
-                "InstructionIdentification": "5791997839278080",
-                "EndToEndIdentification": "8125371765489664",
-                "InstructedAmount": {
-                    "Amount": amount + '',
-                    "Currency": currency
-                },
-                "DebtorAgent": {
-                    "SchemeName": "BICFI",
-                    "Identification": "AAAAGB2L"
-                },
-                "DebtorAccount": {
-                    "SchemeName": "IBAN",
-                    "Identification": "IE29AIBK93115212345678",
-                    "Name": "Gary Kean",
-                    "SecondaryIdentification": "6686302651023360"
-                },
-                "CreditorAgent": {
-                    "SchemeName": "BICFI",
-                    "Identification": "AAAAGB2K"
-                },
-                "CreditorAccount": {
-                    "SchemeName": "IBAN",
-                    "Identification": "IE29AIBK93115212345676",
-                    "Name": "TESTING STUPID TEST FACE",
-                    "SecondaryIdentification": "8380390651723776"
-                },
-                "RemittanceInformation": {
-                    "Unstructured": "emeherpakkaodafeofiu",
-                    "Reference": "ehoorepre"
-                }
-            }
-        },
-        "Risk": {
-            "PaymentContextCode": "PersonToPerson",
-            "MerchantCategoryCode": "nis",
-            "MerchantCustomerIdentification": "1130294929260544",
-            "DeliveryAddress": {
-                "AddressLine": [ "totbelsanagrusa" ],
-                "StreetName": "Morning Road",
-                "BuildingNumber": "62",
-                "PostCode": "G3 5HY",
-                "TownName": "Glasgow",
-                "CountrySubDivision": [ "Scotland" ],
-                "Country": "GB"
-            }
-        }
-    }
-}

@@ -7,19 +7,22 @@ import { Media, Row, Col, Button, Image, Modal, OverlayTrigger } from 'react-boo
 import { connect } from 'react-redux'
 import { fetchBanks, bankSelected, sendPayment, paymentCompleted } from '../actions/store.actions'
 
-const BankSelector = ( { bank, selectedBank, dispatch } ) =>
-{
+const BankSelector = ( { bank, selectedBank, dispatch } ) => {
 
-    if ( !bank )
-    {
+    if (!bank) {
         return null
     }
 
     let isSelected = selectedBank && selectedBank.BankID === bank.BankID
 
+    if (!bank.bankimageURL)
+    {
+        bank.bankimageURL = 'https://images6.moneysavingexpert.com/images/reclaim-packaged-accounts-04.png'
+    }
+
     return (
         <div style={{ textAlign: 'center', border: isSelected ? '1px solid green': null }} onClick={() => dispatch( bankSelected( bank ) )}>
-            {bank.BankName}
+            {bank.name}
             <Image responsive src={bank.bankimageURL}/>
         </div>
     )
@@ -64,10 +67,9 @@ class Checkout extends React.Component
     }
 
 
-    //TODO fetch bank on component load
     render()
     {
-        let { show, onHide, banks, dispatch, selectedBank, total } = { ...this.props }
+        let { show, onHide, banks, dispatch, selectedBank, total, cartItems } = { ...this.props }
 
         return (
             <Modal show={show} onHide={onHide} >
@@ -97,7 +99,7 @@ class Checkout extends React.Component
                     {selectedBank ?
                         <Button bsStyle="primary" style={{width:'100%'}}
                                 onClick={()=>{
-                                    dispatch(sendPayment(selectedBank, total))
+                                    dispatch(sendPayment(selectedBank, total, cartItems))
                                     onHide()
                                 }}
                         >Pay Now</Button>
@@ -115,6 +117,5 @@ export default connect( state =>
         banks: state.store.banks,
         selectedBank: state.store.selectedBank,
         total: state.store.total,
-        bankLoginCompleted: state.store.bankLoginCompleted,
     }
 } )( Checkout )
