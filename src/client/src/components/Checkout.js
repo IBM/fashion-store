@@ -15,15 +15,15 @@ const BankSelector = ( { bank, selectedBank, dispatch } ) => {
 
     let isSelected = selectedBank && selectedBank.BankID === bank.BankID
 
-    if (!bank.bankimageURL)
+    if (!bank['image_url'])
     {
-        bank.bankimageURL = 'https://images6.moneysavingexpert.com/images/reclaim-packaged-accounts-04.png'
+        bank['image_url'] = 'https://images6.moneysavingexpert.com/images/reclaim-packaged-accounts-04.png'
     }
 
     return (
         <div style={{ textAlign: 'center', border: isSelected ? '1px solid green': null }} onClick={() => dispatch( bankSelected( bank ) )}>
             {bank.name}
-            <Image responsive src={bank.bankimageURL}/>
+            <Image responsive src={bank['image_url']}/>
         </div>
     )
 }
