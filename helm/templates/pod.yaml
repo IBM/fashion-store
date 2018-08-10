@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: fashion-store-pod
-  namespace: pcremin-ns
+  namespace: banksy-ns
   labels:
     app: fashion-store
 spec:
@@ -16,10 +16,6 @@ spec:
     env:
     - name: NODE_ENV
       value: integration
-    - name: GATEWAYURL
-      value: http://http://169.62.8.254:32481/open-banking/v1.1
-    - name: EXTERNALURL
-      value: http://fashion-store-svc:8080
   imagePullSecrets:
   - name: artifactory-docker-registry-secret
     #envFrom:

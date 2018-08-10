@@ -25,6 +25,8 @@ RUN npm install npm@latest -g
 # Bundle app source
 COPY ./src/ .
 
+RUN cd client && npm run build && cd ..
+
 #EXPOSE ${INTERNALPORT}
 EXPOSE 8400
 

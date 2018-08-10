@@ -11,7 +11,7 @@ const url = require( 'url' )
 let session = require( 'express-session' )
 let fetch = require( 'node-fetch' )
 const URLSearchParams = require( 'url-search-params' )
-var jwtDecode = require('jwt-decode')
+var jwtDecode = require( 'jwt-decode' )
 
 let data = new URLSearchParams()
 
@@ -59,7 +59,11 @@ let appEnv = cfenv.getAppEnv()
 
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
-    let url = gateway_url + 'banks'
+    console.log( '>>> /gateway/open-banking/banks' )
+
+    let apiEndpointControllerUrl = gateway_url + 'banks'
+
+    console.log( 'calling api-endpoint-controller: ' + apiEndpointControllerUrl )
 
     let options = {
         'headers': {
@@ -68,7 +72,7 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
         }
     }
 
-    fetch( url, options )
+    fetch( apiEndpointControllerUrl, options )
         .then( response =>
         {
 
@@ -84,6 +88,11 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
         {
             console.log( json )
             res.json( json )
+        } )
+        .catch( error =>
+        {
+            console.log( 'ERROR getting banks: ' + error )
+            res.status( 500 ).send()
         } )
 } )
 
@@ -102,7 +111,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     let amount = req.body.amount + ''   // make sure it is a string
     let currency = req.body.currency
 
-    let xFapiFinancialId = req.headers['x-fapi-financial-id']
+    let xFapiFinancialId = req.headers[ 'x-fapi-financial-id' ]
 
     let paymentSetupRequest = {
         "Data": {
@@ -144,12 +153,12 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "MerchantCategoryCode": "nis",
             "MerchantCustomerIdentification": "1130294929260544",
             "DeliveryAddress": {
-                "AddressLine": ["totbelsanagrusa"],
+                "AddressLine": [ "totbelsanagrusa" ],
                 "StreetName": "Morning Road",
                 "BuildingNumber": "62",
                 "PostCode": "G3 5HY",
                 "TownName": "Glasgow",
-                "CountrySubDivision": ["Scotland"],
+                "CountrySubDivision": [ "Scotland" ],
                 "Country": "GB"
             }
         }
@@ -191,7 +200,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
         let paymentBody = paymentSetupRequest
         paymentBody.Data.PaymentId = paymentId
 
-        paymentInits[paymentId] = { xFapiFinancialId: xFapiFinancialId, body: paymentBody }
+        paymentInits[ paymentId ] = { xFapiFinancialId: xFapiFinancialId, body: paymentBody }
 
         console.log( 'error:', error ) // Print the error if one occurred
         console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
@@ -206,98 +215,64 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     } )
 } )
 
-app.post( '/gateway/open-banking/payment-submissions', function ( req, res )
+
+app.get( '/gateway/open-banking/payment-submissions', function ( req, res )
 {
-    let url = gateway_url + 'payments-submissions'
-    let xFapiFinancialId = req.headers[ 'x-fapi-financial-id' ]
-    let code = req.headers.code
 
-    let paymentRequest = req.body
-
-    let options = {
-        "url": url,
-        "headers": {
-            "authorization": "Bearer",
-            "accept": "application/json",
-            "content-type": "application/json",
-            "x-fapi-customer-ip-address": 1,
-            "x-fapi-financial-id": xFapiFinancialId,
-            "x-fapi-interaction-id": 1,
-            "x-idempotency-key": 1,
-            "x-jws-signature": 1,
-            "merchantId": 'xxxx-10',
-            "code": code
-        },
-        "body": paymentRequest,
-        json: true
-    }
-
-    request.post( options, function ( error, response, body )
+    try
     {
-        if ( error )
-        {
-            res.status( 500 ).send( error )
-            return
+
+        let url = gateway_url + 'payment-submissions'
+        let code = req.query.code
+
+
+        console.log( 'decoding jwt: ' + req.query.id_token )
+
+        var decoded = jwtDecode( req.query.id_token )
+
+        let paymentId = decoded.openbanking_intent_id
+
+        let paymentRequest = paymentInits[ paymentId ]
+
+        let body = paymentRequest.body
+
+        let options = {
+            url: url,
+            headers: {
+                "authorization": "Bearer",
+                "accept": "application/json",
+                "content-type": "application/json",
+                "x-fapi-financial-id": paymentRequest.xFapiFinancialId,
+                "x-fapi-interaction-id": 1,
+                "x-idempotency-key": 1,
+                "merchantId": merchantId,
+                "code": code
+            },
+            body: body,
+            json: true
         }
 
-        if ( response.statusCode !== 302 )
+        request.post( options, function ( error, response, body )
         {
-            res.sendStatus( 500 )
-            return
-        }
+            if ( error )
+            {
+                console.log( 'error:', error )
+                res.status( 500 ).send( error )
+                return
+            }
 
-        console.log( 'error:', error ) // Print the error if one occurred
-        console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
-        console.log( 'body:', body ) // print the body
+            // Print the error if one occurred
+            console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
+            console.log( 'body:', body ) // print the body
 
-        res.json( response.body )
-    } )
-} )
-
-app.get( '/oauth/callback', function ( req, res )
-{
-    let url = gateway_url + 'payment-submissions'
-    let code = req.query.code
-
-    var decoded = jwtDecode(req.query.id_token)
-
-    let paymentId = decoded.openbanking_intent_id
-
-    let paymentRequest = paymentInits[paymentId]
-
-    let body = paymentRequest.body
-
-    let options = {
-        url: url,
-        headers: {
-            "authorization": "Bearer",
-            "accept": "application/json",
-            "content-type": "application/json",
-            "x-fapi-financial-id": paymentRequest.xFapiFinancialId,
-            "x-fapi-interaction-id": 1,
-            "x-idempotency-key": 1,
-            "merchantId": merchantId,
-            "code": code
-        },
-        body: body,
-        json: true
+            res.json( response.body )
+        } )
     }
-
-    request.post( options, function ( error, response, body )
+    catch ( error )
     {
-        if ( error )
-        {
-            console.log( 'error:', error )
-            res.status( 500 ).send( error )
-            return
-        }
-
-         // Print the error if one occurred
-        console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
-        console.log( 'body:', body ) // print the body
-
-        res.json( response.body )
-    } )
+        console.log( 'ERROR [/gateway/open-banking/payment-submissions] ' + error )
+        res.status( 500 ).send( error )
+    }
 } )
 
 // the cfenv library will not reflect a change to the port in it's url

@@ -18,17 +18,23 @@ class App extends Component
 {
     render()
     {
+        let startComponent = Main
+
+
         if ( window.location.hash !== "" )
         {
             store.dispatch( postPayment( window.location.hash.replace( '#', '?' ) ) )
-            //store.history.push('/paymentcomplete')
+        }
+        else if( window.location.search.split('=')[0] === '?paymentId')
+        {
+            startComponent = PaymentComplete
         }
 
         return (
             <Provider store={store}>
                 <div className="App">
                     <Switch history={history}>
-                        <Route exact path='/' component={Main}/>
+                        <Route exact path='/' component={startComponent}/>
                         <Route path='/cart' component={Cart}/>
                         <Route path='/shop' component={Shop}/>
                         <Route path='/paymentcomplete' component={PaymentComplete}/>

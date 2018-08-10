@@ -23,7 +23,10 @@ export function fetchBanks()
             .then( banks =>
             {
                 dispatch( receiveBanks( banks ) )
-            } );
+            } )
+            .catch( error => {
+                console.log( error )
+            })
 
         // TODO handle error case
     };
@@ -87,7 +90,7 @@ export function postPayment( query )
         console.log( 'POST /payment-submissions initiated' )
 
         // TODO rename from oauth/callback
-        fetch( '/oauth/callback' + query )
+        fetch( '/gateway/open-banking/payment-submissions' + query )
             .then( response => response.json() )
             .then( json =>
             {
@@ -97,7 +100,7 @@ export function postPayment( query )
 
                 //history.push('/paymentcomplete')
 
-                window.location = '/paymentcomplete?paymentId=' + json.Data.PaymentId
+                window.location = '?paymentId=' + json.Data.PaymentId
                 dispatch( paymentCompleted( purchase ) )
             } )
     }
