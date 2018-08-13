@@ -2,7 +2,9 @@
   "EXTERNALPORT": 8080,
   "INTERNALPORT": 8080,
   "PORT": 8080,
-  "GATEWAYURL": "http://api-controller-svc.banksy-ns:8400/open-banking/v1.1/",
+  "GATEWAYURL": "https://api.us.apiconnect.ibmcloud.com/devikathapar1-test/sb/open-banking/v1.1/",
   "merchantId": "1234",
-  "xFapiFinancialId": "0015800001041REAAY"
+  "xFapiFinancialId": "0015800001041REAAY",
+  "clientId": "0a8e97d3-5ceb-426a-8cc3-bc19fb228cb5",
+  "clientSecret": "xQ3oL4iF8cS0wU5hN4jS4lG8uX1yN7xS3xC7lS5lJ4fS5oH1pJ"
 }
