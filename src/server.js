@@ -69,8 +69,8 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
         'headers': {
             'content-type': 'application/json',
             'accept': 'application/json',
-            'X-IBM-Client-Id': config.clientId,
-            'X-IBM-Client-Secret': config.clientSecret
+            // 'X-IBM-Client-Id': config.clientId,
+            // 'X-IBM-Client-Secret': config.clientSecret
         }
     }
 
@@ -110,7 +110,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
     console.log( url )
 
-    let amount = req.body.amount + ''   // make sure it is a string
+    let amount = parseFloat(req.body.amount + '').toFixed(2) + ''  // make sure it is a string
     let currency = req.body.currency
 
     let xFapiFinancialId = req.headers[ 'x-fapi-financial-id' ]
@@ -121,8 +121,8 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
                 "InstructionIdentification": "5791997839278080",
                 "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
-                    "Amount": "700.00",
-                    "Currency": "EUR"
+                    "Amount": amount,
+                    "Currency": currency
                 },
                 "DebtorAgent": {
                     "SchemeName": "BICFI",
@@ -178,8 +178,8 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "x-idempotency-key": 1,
             "x-jws-signature": 1,
             "merchantId": merchantId,
-            'X-IBM-Client-Id': config.clientId,
-            'X-IBM-Client-Secret': config.clientSecret,
+            // 'X-IBM-Client-Id': config.clientId,
+            // 'X-IBM-Client-Secret': config.clientSecret,
         },
         "body": paymentSetupRequest,
         json: true
@@ -189,12 +189,14 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     {
         if ( error )
         {
+            console.log('[/gateway/open-banking/payments] ERROR: ' + error)
             res.status( 500 ).send( error )
             return
         }
 
         if ( response.statusCode !== 302 )
         {
+            console.log('[/gateway/open-banking/payments] ERROR: wrong status code: ' + response.statusCode)
             res.sendStatus( 500 )
             return
         }
@@ -206,8 +208,6 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
         paymentInits[ paymentId ] = { xFapiFinancialId: xFapiFinancialId, body: paymentBody }
 
-        console.log( 'error:', error ) // Print the error if one occurred
-        console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
         console.log( 'body:', body ) // print the body
 
         let redirectUrl = response.headers.location

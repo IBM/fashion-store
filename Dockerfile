@@ -28,6 +28,6 @@ COPY ./src/ .
 RUN cd client && npm run build && cd ..
 
 #EXPOSE ${INTERNALPORT}
-EXPOSE 8400
+EXPOSE 8080
 
 CMD [ "npm", "start" ]

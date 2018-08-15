@@ -14,7 +14,7 @@ echo '-----------------------------'
 echo '=====>login to registry<====='
 echo '-----------------------------'
 
-docker login -u 'fintech@us.ibm.com' -p 'AKCp5bAtELKwBrxJhBcQHNs8tNg2RBxjbT9vi9jRLBnrRnmYXdGFsF6usZfM5s5oXF9Lgs2MK' https://ip-banksy-repo1-docker-local.artifactory.swg-devops.com
+docker login -u 'fintech@us.ibm.com' -p 'pw' https://ip-banksy-repo1-docker-local.artifactory.swg-devops.com
 sleep 5
 
 echo '------------------------------'

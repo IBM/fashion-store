@@ -23,10 +23,12 @@ class App extends Component
 
         if ( window.location.hash !== "" )
         {
+            console.log('Found # in window.location.  Sending to server')
             store.dispatch( postPayment( window.location.hash.replace( '#', '?' ) ) )
         }
         else if( window.location.search.split('=')[0] === '?paymentId')
         {
+            console.log('Found paymentId in window.location.  Sending to PaymentComplete')
             startComponent = PaymentComplete
         }
 
