@@ -1,5 +1,6 @@
 node_modules
 src/node_modules/
+src/client/build/
 .idea/
 .project/
 .vscode
