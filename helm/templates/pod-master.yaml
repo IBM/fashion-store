@@ -17,7 +17,7 @@ spec:
     - name: NODE_ENV
       value: integration-master
     - name: GATEWAYURL
-      value: http://169.62.8.254:32430/open-banking/v1.1
+      value: http://169.62.8.254:32434/open-banking
     - name: EXTERNALURL
       value: http://fashion-store-svc.ci-test-ns:8080
   imagePullSecrets:
