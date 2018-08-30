@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: fashion-store-svc
+  namespace: ci-pr-ns
+spec:
+  type: NodePort
+  ports:
+  - name: fashion-store
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+    nodePort: 32414
+  selector: 
+    app: fashion-store
