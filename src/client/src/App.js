@@ -14,21 +14,19 @@ import history from './history';
 import store from './store'
 
 import { postPayment } from './actions/store.actions'
+
 class App extends Component
 {
+
     render()
     {
         let startComponent = Main
 
+        let paymentId = (new URLSearchParams( window.location.search )).get( 'paymentId' )
 
-        if ( window.location.hash !== "" )
+        if ( paymentId )
         {
-            console.log('Found # in window.location.  Sending to server')
-            store.dispatch( postPayment( window.location.hash.replace( '#', '?' ) ) )
-        }
-        else if( window.location.search.split('=')[0] === '?paymentId')
-        {
-            console.log('Found paymentId in window.location.  Sending to PaymentComplete')
+            console.log( 'Found paymentId in window.location.  Sending to PaymentComplete' )
             startComponent = PaymentComplete
         }
 

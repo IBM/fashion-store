@@ -42,9 +42,7 @@ class PaymentComplete extends React.Component {
 
     render()
     {
-        //let { purchasedItems, purchaseTotal, dispatch } = {...this.props}
-
-        let paymentId = window.location.search.split('=')[1] // TODO this is obvs error prone
+        let paymentId = (new URLSearchParams( window.location.search )).get( 'paymentId' )
         let purchase = JSON.parse( localStorage.getItem( paymentId ) )
 
         let total = purchase.total
