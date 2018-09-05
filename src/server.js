@@ -1,140 +1,119 @@
 // This application uses express as its web server
 // for more info, see: http://expressjs.com
 
+let config = require( './conf/' + process.env.NODE_ENV + '.config.json' )
 
-let express = require( 'express' );
-let path = require( 'path' );
-let request = require( 'request' );
-let bodyParser = require( 'body-parser' );
-const url = require( "url" );
-let session = require( 'express-session' );
-let fetch = require( 'node-fetch' );
-const URLSearchParams = require( 'url-search-params' );
+let express = require( 'express' )
+let path = require( 'path' )
+let request = require( 'request' )
+let bodyParser = require( 'body-parser' )
+const url = require( 'url' )
+let session = require( 'express-session' )
+let fetch = require( 'node-fetch' )
+const URLSearchParams = require( 'url-search-params' )
+var jwtDecode = require( 'jwt-decode' )
 
 let data = new URLSearchParams()
 
-let port = "8080";
-//let gateway_url = 'http://localhost:8400/open-banking/'; //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/';
-let gateway_url = "http://apollo11.fyre.ibm.com:8400/open-banking/"
+let port = config.PORT
+//let gateway_url = 'http://localhost:8400/open-banking/' //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/'
+//let gateway_url = 'http://apollo11.fyre.ibm.com:8400/open-banking/'
+let gateway_url = config.GATEWAYURL || 'http://localhost:8400/open-banking/v1.1/'
 
-// TODO crap global to hold the paymentId
-let paymentId = null
+console.log( ' gateway: %s', gateway_url )
 
-let external_url = 'http://shoe-store-svc:8080/';
+let paymentInits = {}
 
-if ( process.env.GATEWAYURL )
-{
-    gateway_url = process.env.GATEWAYURL + '/';
-    console.log( " gateway: %s", gateway_url );
-}
+// TODO get the merchantID from the merchant-onboarding api since it will be different per local system
+//const xFapiFinancialId = config.xFapiFinancialId
+const merchantId = config.merchantId
 
-if ( process.env.EXTERNALURL )
-{
-    external_url = process.env.EXTERNALURL + '/';
-    console.log( "external url: %s", external_url );
-}
+let code = null
 
-// cfenv provides access to your Cloud Foundry environment
-// for more info, see: https://www.npmjs.com/package/cfenv
-let cfenv = require( 'cfenv' );
+let cfenv = require( 'cfenv' )
+let app = express()
 
-// create a new express server
-let app = express();
-
-app.use('/', express.static(`${__dirname}/client/build`));
-//[^api|^gateway|^test|^redirect|^oauth]
-// app.get('/*', (req,res) => {
-//     res.sendFile(path.join(__dirname+'/client/build/index.html'))
-// })
-
-
-// app.get('/store', function(req, res) {
-//     res.sendFile(path.join(__dirname, 'client/build/index.html'), function(err) {
-//         if (err) {
-//             res.status(500).send(err)
-//         }
-//     })
-// })
+app.use( '/', express.static( `${__dirname}/client/build` ) )
 
 // serve the files out of ./public as our main files
-app.use( express.static( path.join( __dirname, '/public' ) ) );
+app.use( express.static( path.join( __dirname, '/public' ) ) )
+
+//app.use( '/callback', express.static( path.join( __dirname, '/public/tmp' ) ) )
 // session tokens
 app.use( session( {
     secret: 'sdfrsedterdsafaasdf',
     resave: true,
     saveUninitialized: true
-} ) );
+} ) )
 
-let ssn;
+let ssn
 
 // for parsing incoming requests
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
+app.use( bodyParser.json() )       // to support JSON-encoded bodies
 app.use( bodyParser.urlencoded( {     // to support URL-encoded bodies
     extended: true
-} ) );
+} ) )
 
 // get the app environment from Cloud Foundry
-let appEnv = cfenv.getAppEnv();
+let appEnv = cfenv.getAppEnv()
 
-
-// home page is in /checkout.html
-// app.get( '/', function ( req, res )
-// {
-//     res.sendFile( path.resolve( 'public/checkout.html' ) );
-// } );
-
-
-// routes to direct to gate way
-// get banks Step1
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
+    console.log( '>>> /gateway/open-banking/banks' )
 
+    let apiEndpointControllerUrl = gateway_url + 'banks'
 
-    let request_url = gateway_url + 'banks';
-    // console.log( request_url );
-    // console.log( req.headers );
+    console.log( 'calling api-endpoint-controller: ' + apiEndpointControllerUrl )
+
     let options = {
-        "url": request_url,
-        "headers": {
-            "content-type": "application/json",
-            "accept": "application/json"
+        'headers': {
+            'content-type': 'application/json',
+            'accept': 'application/json',
+            // 'X-IBM-Client-Id': config.clientId,
+            // 'X-IBM-Client-Secret': config.clientSecret
         }
-    };
-    console.log( '1. Get the list of available banks..' );
-    console.log( options );
-    request.get( options, function ( error, response, body )
-    {
-        if(error || response.statusCode !== 200)
-        {
-            console.log( 'error:', error ); // Print the error if one occurred
-            res.sendStatus(500)
-        }
-        else
-        {
-            console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
-            console.log( 'body:', body );
-            res.json( JSON.parse(response.body) );
-        }
-    } );
+    }
 
-} );
+    fetch( apiEndpointControllerUrl, options )
+        .then( response =>
+        {
+
+            if ( response.status !== 200 )
+            {
+                res.status( response.status ).send()
+                throw('unexpected status: ' + response.status)
+            }
+
+            return response.json()
+        } )
+        .then( json =>
+        {
+            console.log( json )
+            res.json( json )
+        } )
+        .catch( error =>
+        {
+            console.log( 'ERROR getting banks: ' + error )
+            res.status( 500 ).send()
+        } )
+} )
 
 let oauthcomplete = false
-// payment initiations step 2
+
 app.post( '/gateway/open-banking/payments', function ( req, res )
 {
     oauthcomplete = false
 
     ssn = req.session
 
-    let request_url = gateway_url + 'payments'
+    let url = gateway_url + 'payments'
 
-    console.log( request_url )
+    console.log( url )
 
-    let amount = req.body.amount
+    let amount = parseFloat(req.body.amount + '').toFixed(2) + ''  // make sure it is a string
     let currency = req.body.currency
-    let bankId = req.header( "bankID" )
-    ssn.bankId = bankId
+
+    let xFapiFinancialId = req.headers[ 'x-fapi-financial-id' ]
 
     let paymentSetupRequest = {
         "Data": {
@@ -142,7 +121,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
                 "InstructionIdentification": "5791997839278080",
                 "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
-                    "Amount": amount + "",
+                    "Amount": amount,
                     "Currency": currency
                 },
                 "DebtorAgent": {
@@ -162,7 +141,7 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
                 "CreditorAccount": {
                     "SchemeName": "IBAN",
                     "Identification": "IE29AIBK93115212345676",
-                    "Name": "Carlo Marcoli",
+                    "Name": "TESTING",
                     "SecondaryIdentification": "8380390651723776"
                 },
                 "RemittanceInformation": {
@@ -176,200 +155,144 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "MerchantCategoryCode": "nis",
             "MerchantCustomerIdentification": "1130294929260544",
             "DeliveryAddress": {
-                "AddressLine": ["totbelsanagrusa"],
+                "AddressLine": [ "totbelsanagrusa" ],
                 "StreetName": "Morning Road",
                 "BuildingNumber": "62",
                 "PostCode": "G3 5HY",
                 "TownName": "Glasgow",
-                "CountrySubDivision": ["Scotland"],
+                "CountrySubDivision": [ "Scotland" ],
                 "Country": "GB"
             }
         }
     }
 
     let options = {
-        "url": request_url,
+        "url": url,
         "headers": {
             "authorization": "Bearer",
             "accept": "application/json",
             "content-type": "application/json",
             "x-fapi-customer-ip-address": 1,
-            "x-fapi-customer-last-logged-time": 1,
-            "x-fapi-financial-id": 1,
+            "x-fapi-financial-id": xFapiFinancialId,
             "x-fapi-interaction-id": 1,
             "x-idempotency-key": 1,
             "x-jws-signature": 1,
-            "bankid": bankId,
+            "merchantId": merchantId,
+            // 'X-IBM-Client-Id': config.clientId,
+            // 'X-IBM-Client-Secret': config.clientSecret,
         },
         "body": paymentSetupRequest,
         json: true
-    };
-
-    console.log( '2. Initiating the Payment..' );
-    console.log( JSON.stringify( options ) );
+    }
 
     request.post( options, function ( error, response, body )
     {
-        if(response.statusCode !== 302)
+        if ( error )
         {
-            res.sendStatus(500)
+            console.log('[/gateway/open-banking/payments] ERROR: ' + error)
+            res.status( 500 ).send( error )
             return
         }
 
-        console.log( 'error:', error ); // Print the error if one occurred
-        console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
-        console.log( 'body:', body ); // print the body
+        if ( response.statusCode !== 302 )
+        {
+            console.log('[/gateway/open-banking/payments] ERROR: wrong status code: ' + response.statusCode)
+            res.sendStatus( 500 )
+            return
+        }
 
-        paymentId = body.Data.PaymentId;
+        let paymentId = response.body.Data.PaymentId
 
-        //ssn.payment_data = JSON.stringify( tempData );
+        let paymentBody = paymentSetupRequest
+        paymentBody.Data.PaymentId = paymentId
 
-        // TODO look for status code 302 and a redirectUrl
-        // use that redirectUrl instead of the hard coded url below
-        // Register bank oauth/callback with bank for the auth code that then gets passed to banksy
+        paymentInits[ paymentId ] = { xFapiFinancialId: xFapiFinancialId, body: paymentBody }
 
-        let redirectUrl = response.headers.location + "?client_id=54c715f0-231c-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
+        console.log( 'body:', body ) // print the body
 
-        console.log('/payments response redirect_url: ' + redirectUrl)
+        let redirectUrl = response.headers.location
 
-        //response.body.Links.next = redirectUrl
+        console.log( '/payments response redirect_url: ' + redirectUrl )
 
-        //response.body.Links.next = "http://169.46.60.51:8181/loginOauthUser?client_id=bbdf7ed0-2312-11e8-9303-ed96349e1d66&scope=psd2&amount=" + amount + "&currency=" + currency + "&state=123456&paymentid=" + paymentId
-
-        res.json( { redirect_url: redirectUrl } );
-    } );
-} );
+        // TODO might need to save the paymentId.... how will I know what payment data the code belongs to?
+        res.json( { paymentId, redirect_url: redirectUrl } )
+    } )
+} )
 
 
-
-app.get( '/checkauthcomplete', function ( req, res )
+app.get( '/gateway/open-banking/payment-submissions', function ( req, res )
 {
-    res.send(oauthcomplete ? 200 : 400)
 
-    if(oauthcomplete)
+    try
     {
-        oauthcomplete = false
-    }
-})
 
-// TODO this really needs to be paymentSubmission to Banksy.  I do not handle getting the token
-app.get( '/oauth/callback', function ( req, res )
-{
-
-    if ( !req.query.code )
-    {
-        // TODO what is the proper status code?
-        res.send( 500 )
-        return
-    }
-
-    // TODO the account number should be in the req.query and I need to pass that as well
-
-    let data = new URLSearchParams()
-    data.append( "authorizationcode", req.query.code )
-    data.append( "paymentid", paymentId )
-    data.append( "merchantid", "M0000" )
-    data.append( "accountno", req.query.accountno)
-    data.append( 'grant_type', 'authorization_code' )
-    data.append( 'client_id', '54c715f0-231c-11e8-9303-ed96349e1d66' )
-    data.append( 'client_secret', '16826038-c685-484e-9cb6-0fd2e5feecda' )
-    data.append( 'redirect_uri', 'http://apollo11.fyre.ibm.com:8500/oauth/callback' )
+        let url = gateway_url + 'payment-submissions'
+        let code = req.query.code
 
 
-    let url =  gateway_url + 'oauth';
+        console.log( 'decoding jwt: ' + req.query.id_token )
 
-    //console.log('REDIRECT')
-    //res.redirect( 'http://localhost:8080/index.html#/cart' );
-    //res.sendFile(path.join(__dirname, 'client/build/index.html'))
+        var decoded = jwtDecode( req.query.id_token )
 
+        let paymentId = decoded.openbanking_intent_id
 
+        let paymentRequest = paymentInits[ paymentId ]
 
+        let body = paymentRequest.body
 
-    fetch( url,
-        {
-            method: 'POST',
-            body: data
-        } )
-        .then( response =>
-        {
-            // TODO check that there is a 302 status code
-            // TODO get server side routing for react working... this is pure garbage
-            oauthcomplete = true
-            //res.redirect('/paymentcomplete')
-        } )
-        .catch( error =>
-        {
-            console.log( error )
-        } )
-} );
-
-app.get( '/test' , function( req, res ) {
-    oauthcomplete = true
-})
-
-app.get( '/redirect_bank_login', function( req, res ) {
-
-    //http://169.46.60.51:8181/loginOauthUser
-
-    // 1. redirect to bank login
-    // 2. get auth token
-    // 3. complete payment
-})
-
-//app.get( '/redirect_location', function ( req, res )
-app.get( '/redirect_payment_complete', function ( req, res )
-{
-    // add bank login here
-    /*let options = {
-        method: 'POST',
-        url: gateway_url + 'payment-submissions',
-        headers:
-            {
-                bankid: ssn.bankId,
-                'x-jws-signature': '1',
-                'x-idempotency-key': '1',
-                'x-fapi-interaction-id': '1',
-                'x-fapi-financial-id': '1',
-                'x-fapi-customer-last-logged-time': '1',
-                'x-fapi-customer-ip-address': '1',
-                'content-type': 'application/json',
-                accept: 'application/json',
-                authorization: 'Bearer ' + 'accesstokenplaceholder'
+        let options = {
+            url: url,
+            headers: {
+                "authorization": "Bearer",
+                "accept": "application/json",
+                "content-type": "application/json",
+                "x-fapi-financial-id": paymentRequest.xFapiFinancialId,
+                "x-fapi-interaction-id": 1,
+                "x-idempotency-key": 1,
+                "merchantId": merchantId,
+                "code": code,
+                'X-IBM-Client-Id': config.clientId,
+                'X-IBM-Client-Secret': config.clientSecret
             },
-        body: JSON.parse( ssn.payment_data ),
-        json: true
-    };
+            body: body,
+            json: true
+        }
 
-    console.log( '5. Submitting the payment..' );
-    console.log( JSON.stringify( options ) );
+        request.post( options, function ( error, response, body )
+        {
+            if ( error )
+            {
+                console.log( 'error:', error )
+                res.status( 500 ).send( error )
+                return
+            }
 
-    request( options, function ( error, response, body )
+            // Print the error if one occurred
+            console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
+            console.log( 'body:', body ) // print the body
+
+            res.json( response.body )
+        } )
+    }
+    catch ( error )
     {
-        console.log( 'error:', error ); // Print the error if one occurred
-        console.log( 'statusCode:', response && response.statusCode ); // Print the response status code if a response was received
-        console.log( 'body:', body ); // print the body
-
-        // send the completed file
-        res.redirect( '/paymentcomplete.html' );
-    } );*/
-
-    res.redirect( '/paymentcomplete.html' );
-} );
+        console.log( 'ERROR [/gateway/open-banking/payment-submissions] ' + error )
+        res.status( 500 ).send( error )
+    }
+} )
 
 // the cfenv library will not reflect a change to the port in it's url
 // so hack in the correct values - ok while it works...
 if ( appEnv.isLocal )
 {
-    appEnv.url = appEnv.url.replace( appEnv.port, port );
-    appEnv.port = port;
+    appEnv.url = appEnv.url.replace( appEnv.port, port )
+    appEnv.port = port
 }
 
-console.log( appEnv.port );
+console.log( appEnv.port )
 // start server on the specified port and binding host
-app.listen( appEnv.port, '0.0.0.0', function ()
+module.exports = app.listen( port, '0.0.0.0', function ()
 {
-
     // print a message when the server starts listening
-    console.log( "server starting on " + appEnv.url );
-} );
-
+    console.log( 'server starting on ' + appEnv.url )
+} )

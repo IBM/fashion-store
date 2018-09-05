@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: fashion-store-svc
-  namespace: your-ns
+  namespace: banksy-ns
 spec:
   type: NodePort
   ports:
@@ -10,6 +10,6 @@ spec:
     protocol: TCP
     port: 8080
     targetPort: 8080
-    nodePort: 32013
+    nodePort: 32404
   selector:
     app: fashion-store
