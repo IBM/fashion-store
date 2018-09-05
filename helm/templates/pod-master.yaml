@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: fashion-store-pod
+  namespace: ci-test-ns
+  labels: 
+    app: fashion-store
+spec: 
+  containers:
+  - name: fashion-store
+    image: ip-banksy-repo1-docker-local.artifactory.swg-devops.com/banksy/fashion-store/master:latest
+    ports:
+    - name: main
+      protocol: TCP
+      containerPort: 8080
+    env: 
+    - name: NODE_ENV
+      value: integration-master
+    - name: GATEWAYURL
+      value: http://169.62.8.254:32430/open-banking/v1.1
+    - name: EXTERNALURL
+      value: http://fashion-store-svc.ci-test-ns:8080
+  imagePullSecrets:
+  - name: artifactory-docker-registry-secret

@@ -25,7 +25,8 @@ RUN npm install npm@latest -g
 # Bundle app source
 COPY ./src/ .
 
-RUN cd client && npm run build && cd ..
+EXPOSE 8080
+#EXPOSE ${PORT}
 
 #EXPOSE ${INTERNALPORT}
 EXPOSE 8080

@@ -5,8 +5,10 @@ properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKe
 
 env.EXECUTOR='taas-swarm'
 
-env.DOCKER_IMAGE_NAME='fashion-store'
+env.GITHUB_ORG_NAME='Banksy'
+env.GITHUB_REPO_NAME='fashion-store'
 
+env.DOCKER_IMAGE_NAME='fashion-store'
 env.ART_DOCKER_REGISTRY_HOSTNAME='ip-banksy-repo1-docker-local'
 env.ART_DOCKER_REGISTRY_DOMAIN_NAME='artifactory.swg-devops.com'
 env.ART_DOCKER_REGISTRY_SUBFOLDER='banksy'
@@ -14,27 +16,33 @@ env.ART_DOCKER_REPO= "${ART_DOCKER_REGISTRY_HOSTNAME}.${ART_DOCKER_REGISTRY_DOMA
 
 env.JENKINS_ARTIFACTORY_CREDENTIAL='fintech.artifactory.api.key'
 
-env.GITHUB_ORG_NAME='Banksy'
-env.GITHUB_REPO_NAME='fashion-store-website'
+def server
+def rtDocker 
+def imageTag
+def srcDir
 
 node("$EXECUTOR") {
 
   setEnvironment();
-
+  
+  
   stage("Checkout SCM") {
     checkout scm;
   }
-
-  def server
-  def rtDocker
-  def imageTag
 
   stage("Artifactory Configuration") {
     server = Artifactory.server( 'na.artifactory.swg-devops.com' )
     buildInfo = Artifactory.newBuildInfo()
     rtDocker = Artifactory.docker server: server
+    
+    env.ART_DOCKER_IMAGE_TAG = "${ART_DOCKER_REPO}/${DOCKER_IMAGE_NAME}/${ART_DOCKER_TAG_NAME}:latest"
+    sh """
+      echo ${ART_DOCKER_IMAGE_TAG}
+    """
+  }
 
-    env.ART_DOCKER_IMAGE_TAG = "${ART_DOCKER_REPO}/${DOCKER_IMAGE_NAME}:${ART_DOCKER_TAG_NAME}"
+  stage("Node Test"){
+    sh 'node -v'
   }
 
   withCredentials([usernamePassword(credentialsId: "$JENKINS_ARTIFACTORY_CREDENTIAL", passwordVariable: 'ART_PW', usernameVariable: 'ART_USER')]) {
@@ -47,6 +55,27 @@ node("$EXECUTOR") {
     stage("Push Docker Image") {
       rtDocker.push( "${ART_DOCKER_IMAGE_TAG}", "${ART_DOCKER_REPO}" )
       server.publishBuildInfo buildInfo
+    }
+
+    withCredentials([usernamePassword(credentialsId: "$JENKINS_ICP_CREDENTIALS", passwordVariable: 'ICP_PW', usernameVariable: 'ICP_USER')]) {
+
+      stage("Set ICP.Context") {
+        sh """
+          curl -fsSL https://clis.ng.bluemix.net/install/linux | sh
+          mkdir ./tmp
+          curl --insecure https://${ICP_URL}/api/cli/icp-linux-amd64 > ./tmp/icp-linux-amd64
+          bx plugin install ./tmp/icp-linux-amd64
+          bx pr login --skip-ssl-validation -u ${ICP_USER} -p ${ICP_PW} -a https://${ICP_URL} -c id-hera-account
+        """
+      }
+
+    }
+
+    stage("Deploy to ICP") {
+      sh """
+        chmod 777 ${DEPLOYMENT_FILE}
+        ./${DEPLOYMENT_FILE}
+      """
     }
 
     setBuildStatus("Build complete", "SUCCESS");
@@ -79,15 +108,23 @@ void setBuildStatus(String message, String state) {
 void setEnvironment() {
   if (env.BRANCH_NAME == 'master') {
     env.IS_PRODUCTION = 'true'
-    env.ART_DOCKER_TAG_NAME='master-latest'
+    env.ART_DOCKER_TAG_NAME='master'
+    env.DEPLOYMENT_FILE='k8s-deploy-master.sh'
+    env.ICP_URL='169.62.8.254:8443'
+    env.JENKINS_ICP_CREDENTIALS='hera.icp.credentials'
   }
   else if (env.BRANCH_NAME == 'dev') {
     env.IS_STAGING = 'true'
-    env.ART_DOCKER_TAG_NAME='dev-latest'
+    env.ART_DOCKER_TAG_NAME='dev'
+    env.DEPLOYMENT_FILE='k8s-deploy-dev.sh'
+    env.ICP_URL='169.62.8.254:8443'
+    env.JENKINS_ICP_CREDENTIALS='hera.icp.credentials'
   }
   else {
     env.IS_PRODUCTION = 'false'
-    // e.g. PR-104-1 for a Pull Request
-    env.ART_DOCKER_TAG_NAME='pr-latest'
+    env.ART_DOCKER_TAG_NAME='pr'
+    env.DEPLOYMENT_FILE='k8s-deploy-pr.sh'
+    env.ICP_URL='169.62.8.254:8443'
+    env.JENKINS_ICP_CREDENTIALS='hera.icp.credentials'
   }
 }
