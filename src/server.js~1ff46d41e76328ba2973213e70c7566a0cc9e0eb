@@ -20,9 +20,9 @@ let paymentId = null
 
 let external_url = 'http://shoe-store-svc:8080/';
 
-if ( process.env.GATEWAYURL )
+if ( process.env.PAYMENTSAPI )
 {
-    gateway_url = process.env.GATEWAYURL + '/';
+    gateway_url = process.env.PAYMENTSAPI + '/';
     console.log( " gateway: %s", gateway_url );
 }
 

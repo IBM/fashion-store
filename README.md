@@ -20,7 +20,7 @@ Default port is 8080 & the configfile is http://localhost:8400/open-banking
 
 Usage: ./run.sh -e 80 -g http://myserver:8400/open-banking
 
-Where GATEWAYURL is the apicontroller.  It must be in the form of http://9.30.202.303:8400/open-banking/
+Where PAYMENTSAPI is the apicontroller.  It must be in the form of http://9.30.202.303:8400/open-banking/
 
 Note: You don't need the / at the end anymore.
 

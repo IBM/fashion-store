@@ -18,7 +18,7 @@ let data = new URLSearchParams()
 let port = config.PORT
 //let gateway_url = 'http://localhost:8400/open-banking/' //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/'
 //let gateway_url = 'http://apollo11.fyre.ibm.com:8400/open-banking/'
-let gateway_url = config.GATEWAYURL || 'http://localhost:8400/open-banking/v1.1/'
+let gateway_url = config.PAYMENTSAPI || 'http://localhost:8400/open-banking/v1.1/'
 
 console.log( ' gateway: %s', gateway_url )
 
@@ -45,8 +45,6 @@ app.use( session( {
     resave: true,
     saveUninitialized: true
 } ) )
-
-let ssn
 
 // for parsing incoming requests
 app.use( bodyParser.json() )       // to support JSON-encoded bodies
@@ -98,14 +96,8 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
         } )
 } )
 
-let oauthcomplete = false
-
 app.post( '/gateway/open-banking/payments', function ( req, res )
 {
-    oauthcomplete = false
-
-    ssn = req.session
-
     let url = gateway_url + 'payments'
 
     console.log( url )
@@ -118,7 +110,6 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     let paymentSetupRequest = {
         "Data": {
             "Initiation": {
-                "InstructionIdentification": "5791997839278080",
                 "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
                     "Amount": amount,
@@ -222,13 +213,10 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
 app.get( '/gateway/open-banking/payment-submissions', function ( req, res )
 {
-
     try
     {
-
         let url = gateway_url + 'payment-submissions'
         let code = req.query.code
-
 
         console.log( 'decoding jwt: ' + req.query.id_token )
 
