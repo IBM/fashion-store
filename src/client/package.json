@@ -2,7 +2,6 @@
   "name": "ssw2",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://169.62.8.254:32414",
   "dependencies": {
     "lodash": "^4.17.5",
     "react": "^16.2.0",

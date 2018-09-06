@@ -60,7 +60,6 @@ function getPaymentRequest()
     return {
         "Data": {
             "Initiation": {
-                "InstructionIdentification": "5791997839278080",
                 "EndToEndIdentification": "8125371765489664",
                 "InstructedAmount": {
                     "Amount": '100.00',

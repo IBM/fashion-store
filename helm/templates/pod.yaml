@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: fashion-store-pod
   namespace: banksy-ns
-  labels: 
+  labels:
     app: fashion-store
 spec:
   containers:
@@ -14,10 +14,8 @@ spec:
       protocol: TCP
       containerPort: 8080
     env:
-    - name: GATEWAYURL
-      value: http://9.42.40.99:30400/open-banking
-    - name: EXTERNALURL
-      value: http://fashion-store-svc.banks-ns:8080
+    - name: NODE_ENV
+    value: development
   imagePullSecrets:
   - name: artifactory-docker-registry-secret
     #envFrom:

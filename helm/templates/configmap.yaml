@@ -6,5 +6,4 @@ data:
   EXTERNALPORT: 8080
   INTERNALPORT: 8080
   PORT: 8080
-  GATEWAYURL: http://your-gateway-host:your-gateway-port/open-banking
-  EXTERNALURL: http://your-external-host:your-external-port
+  PAYMENTSAPI: http://your-gateway-host:your-gateway-port/open-banking
