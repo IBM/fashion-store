@@ -18,7 +18,9 @@ let data = new URLSearchParams()
 let port = config.PORT
 //let gateway_url = 'http://localhost:8400/open-banking/' //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/'
 //let gateway_url = 'http://apollo11.fyre.ibm.com:8400/open-banking/'
-let gateway_url = config.PAYMENTSAPI || 'http://localhost:8400/open-banking/v1.1/'
+
+
+let gateway_url = config.PAYMENTSAPI
 
 console.log( ' gateway: %s', gateway_url )
 
@@ -32,6 +34,13 @@ let code = null
 
 let cfenv = require( 'cfenv' )
 let app = express()
+
+app.use( '/', function( req, res, next)
+{
+    console.log('middlware: ' + req.originalUrl)
+
+    next()
+})
 
 app.use( '/', express.static( `${__dirname}/client/build` ) )
 
@@ -51,6 +60,11 @@ app.use( bodyParser.json() )       // to support JSON-encoded bodies
 app.use( bodyParser.urlencoded( {     // to support URL-encoded bodies
     extended: true
 } ) )
+
+app.use( function ( err, req, res, next )
+{
+    res.end( JSON.stringify( { error: err } ) )
+} )
 
 // get the app environment from Cloud Foundry
 let appEnv = cfenv.getAppEnv()
