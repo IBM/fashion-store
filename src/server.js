@@ -1,7 +1,7 @@
 // This application uses express as its web server
 // for more info, see: http://expressjs.com
 
-let config = require( './conf/' + process.env.NODE_ENV + '.config.json' )
+let config = require( __dirname + '/conf/' + process.env.NODE_ENV + '.config.json' )
 
 let express = require( 'express' )
 let path = require( 'path' )
