@@ -35,17 +35,11 @@ let code = null
 let cfenv = require( 'cfenv' )
 let app = express()
 
-app.use( '/', function( req, res, next)
-{
-    console.log('middlware: ' + req.originalUrl)
-
-    next()
-})
 
 app.use( '/', express.static( `${__dirname}/client/build` ) )
 
 // serve the files out of ./public as our main files
-app.use( express.static( path.join( __dirname, '/public' ) ) )
+//app.use( express.static( path.join( __dirname, '/public' ) ) )
 
 //app.use( '/callback', express.static( path.join( __dirname, '/public/tmp' ) ) )
 // session tokens
