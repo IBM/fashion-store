@@ -5,6 +5,6 @@
   "PAYMENTSAPI": "http://169.62.8.254:32420/open-banking/v1.1/",
   "merchantId": "1234",
   "xFapiFinancialId": "0015800001041REAAY",
-  "clientId": "0a8e97d3-5ceb-426a-8cc3-bc19fb228cb5",
-  "clientSecret": "xQ3oL4iF8cS0wU5hN4jS4lG8uX1yN7xS3xC7lS5lJ4fS5oH1pJ"
+  "clientId": "e89c5ae6-3361-42cf-a028-87dc27820e7f",
+  "clientSecret": "iQ7lB5xX6tD0gV7hJ2aL6kH1fX3dN4rW7hV5iG5iL1sB4pR3tX"
 }

@@ -13,7 +13,7 @@ docker tag fashion-store:latest ip-banksy-repo1-docker-local.artifactory.swg-dev
 echo '-----------------------------'
 echo '=====>login to registry<====='
 echo '-----------------------------'
-docker login -u 'fintech@us.ibm.com' -p 'pw' https://ip-banksy-repo1-docker-local.artifactory.swg-devops.com
+docker login -u 'fintech@us.ibm.com' -p 'AKCp5bAtELKwBrxJhBcQHNs8tNg2RBxjbT9vi9jRLBnrRnmYXdGFsF6usZfM5s5oXF9Lgs2MK' https://ip-banksy-repo1-docker-local.artifactory.swg-devops.com
 sleep 5
 
 echo '------------------------------'
@@ -25,26 +25,26 @@ docker push ip-banksy-repo1-docker-local.artifactory.swg-devops.com/ip-banksy-re
 echo '------------------------------------'
 echo '=====>delete fashion-store-pod<====='
 echo '------------------------------------'
-kubectl delete pod --namespace=banksy-ns fashion-store-pod
+kubectl delete pod --namespace=ci-dev-ns fashion-store-pod
 sleep 25
 
 echo '------------------------------------'
 echo '=====>create fashion-store-pod<====='
 echo '------------------------------------'
 
-kubectl create -f ./helm/templates/pod.yaml
+kubectl create -f ./helm/templates/pod-dev.yaml
 
 echo '------------------------------------'
 echo '=====>delete fashion-store-svc<====='
 echo '------------------------------------'
-kubectl delete svc --namespace=banksy-ns fashion-store-svc
+kubectl delete svc --namespace=ci-dev-ns fashion-store-svc
 sleep 1
 
 echo '------------------------------------'
 echo '=====>create fashion-store-svc<====='
 echo '------------------------------------'
 
-kubectl create -f ./helm/templates/svc.yaml
+kubectl create -f ./helm/templates/svc-dev.yaml
 
 echo '----------------------------------'
 echo '=====>fashion-store deployed<====='
