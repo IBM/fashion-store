@@ -75,8 +75,8 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
         'headers': {
             'content-type': 'application/json',
             'accept': 'application/json',
-            // 'X-IBM-Client-Id': config.clientId,
-            // 'X-IBM-Client-Secret': config.clientSecret
+            'X-IBM-Client-Id': config.clientId,
+            'X-IBM-Client-Secret': config.clientSecret
         }
     }
 
@@ -177,8 +177,8 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "x-idempotency-key": 1,
             "x-jws-signature": 1,
             "merchantId": merchantId,
-            // 'X-IBM-Client-Id': config.clientId,
-            // 'X-IBM-Client-Secret': config.clientSecret,
+            'X-IBM-Client-Id': config.clientId,
+            'X-IBM-Client-Secret': config.clientSecret,
         },
         "body": paymentSetupRequest,
         json: true
