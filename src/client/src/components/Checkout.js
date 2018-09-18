@@ -13,7 +13,7 @@ const BankSelector = ( { bank, selectedBank, dispatch } ) => {
         return null
     }
 
-    let isSelected = selectedBank && selectedBank.BankID === bank.BankID
+    let isSelected = selectedBank && selectedBank['x-fapi-financial-id'] === bank['x-fapi-financial-id']
 
     if (!bank['image_url'])
     {
