@@ -32,7 +32,7 @@ echo '------------------------------------'
 echo '=====>create fashion-store-pod<====='
 echo '------------------------------------'
 
-kubectl create -f ./helm/templates/pod-nike.yaml
+kubectl create -f ./helm/templates/pod-citi.yaml
 
 echo '------------------------------------'
 echo '=====>delete fashion-store-svc<====='
@@ -44,7 +44,7 @@ echo '------------------------------------'
 echo '=====>create fashion-store-svc<====='
 echo '------------------------------------'
 
-kubectl create -f ./helm/templates/svc-nike.yaml
+kubectl create -f ./helm/templates/svc-citi.yaml
 
 echo '----------------------------------'
 echo '=====>fashion-store deployed<====='
