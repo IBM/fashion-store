@@ -109,7 +109,7 @@ void setEnvironment() {
   if (env.BRANCH_NAME == 'master') {
     env.IS_PRODUCTION = 'true'
     env.ART_DOCKER_TAG_NAME='master'
-    env.ART_DOCKER_TAG_NUMBER=env.BUILD_NUMBER
+    env.ART_DOCKER_TAG_NUMBER='latest' //env.BUILD_NUMBER
     env.DEPLOYMENT_FILE='k8s-deploy-master.sh'
     env.ICP_URL='169.62.8.254:8443'
     env.JENKINS_ICP_CREDENTIALS='hera.icp.credentials'
@@ -117,7 +117,7 @@ void setEnvironment() {
   else if (env.BRANCH_NAME == 'dev') {
     env.IS_STAGING = 'true'
     env.ART_DOCKER_TAG_NAME='dev'
-    env.ART_DOCKER_TAG_NUMBER=env.BUILD_NUMBER
+    env.ART_DOCKER_TAG_NUMBER='latest' //env.BUILD_NUMBER
     env.DEPLOYMENT_FILE='k8s-deploy-dev.sh'
     env.ICP_URL='169.62.8.254:8443'
     env.JENKINS_ICP_CREDENTIALS='hera.icp.credentials'
@@ -125,7 +125,7 @@ void setEnvironment() {
   else {
     env.IS_PRODUCTION = 'false'
     env.ART_DOCKER_TAG_NAME='pr'
-    env.ART_DOCKER_TAG_NUMBER="${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+    env.ART_DOCKER_TAG_NUMBER='latest' //"${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
     env.DEPLOYMENT_FILE='k8s-deploy-pr.sh'
     env.ICP_URL='169.62.8.254:8443'
     env.JENKINS_ICP_CREDENTIALS='hera.icp.credentials'
