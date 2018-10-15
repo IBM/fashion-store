@@ -1,17 +1,18 @@
 echo '---------------------------------'
 echo '=====>run fashion-store'
 echo '---------------------------------'
-date
-echo '=====>docker rm api-controller'
+
+echo '=====>docker rm'
 docker stop fashion-store
-sleep 2
 docker rm fashion-store
-sleep 3
+sleep 2
+
 echo '=====>docker build'
-sh docker-build.sh
+docker build --no-cache -t fashion-store .
+
 echo '=====>docker run'
 docker run -d --restart always --name fashion-store -p 8080:8080 -e "NODE_ENV=local" fashion-store
-date
-echo '-------------------------------------'
+
+echo '---------------------------------'
 echo '=====>fashion-store running'
-echo '-------------------------------------'
+echo '---------------------------------'

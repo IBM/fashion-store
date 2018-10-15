@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: fashion-store-configmap
-data:
-  EXTERNALPORT: 8080
-  INTERNALPORT: 8080
-  PORT: 8080
-  PAYMENTSAPI: http://your-gateway-host:your-gateway-port/open-banking
