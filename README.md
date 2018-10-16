@@ -17,7 +17,6 @@ This code pattern is for developers looking to start building applications with 
 4. The IOBP initiates a single payment with the customer’s bank.
 5. The customer enters their credentials on the bank authentication page to authorize the transaction.
 6. Once successfully authenticated, the payment submission is made from the customer’s account.
-7. The Bank sends the payment status back to IOBP to complete the transaction.
 
 # Included Components
 * [IBM Open Banking Platform v1.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform) IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
