@@ -27,6 +27,22 @@ cd src/client
 npm run build
 ```
 
+# Register with the IBM Open Banking Platform
+
+To obtains a clientId and clientSecret, register:
+https://github.ibm.com/Banksy/banksy/wiki/Demo-System
+
+### Update code withe clientId and Secret
+
+Update your node server with your clientId and clientSecert
+
+`src/server.js`
+
+```
+const clientId = '{REPLACE_ME}'
+const clientSecret = '{REPLACE_ME}'
+```
+
 # TODO
 1. save hostname & port as a config file to be read by app.js
 
