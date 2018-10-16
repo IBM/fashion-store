@@ -1,22 +1,26 @@
 # Fashion Store with IBM Open Banking Platform
-Imagine you are bank which wants the agility of a digital platform but are averse to the risks of replacing the legacy systems or moving it directly to the public cloud. You seek accelerators for your digital transformations, are driven by new regulation and compliance, or are simply on the lookout of opportunities to unlock new digital channels and revenue streams. Your clients want to integrate with direct payments from banks to accommodate customer’s needs while making purchases, securely and easily. TheIBM Open Banking Platform is a software-as-a-service suite built on certain predefined 
-industry standards that financial institutions can use to help accelerate their core-to-cloud journey.
+Imagine you are bank that wants the agility of a digital platform but you are averse to the risks of replacing legacy systems or moving directly to the public cloud. You might be seeking accelerators for your digital transformations, or you may be driven by new regulation and compliance -- or perhaps you're simply on the lookout of opportunities to unlock new digital channels and revenue streams. Your clients want to integrate with direct payments from banks to accommodate customers' needs while making purchases, securely and easily. The IBM Open Banking Platform is a software-as-a-service suite built on certain predefined industry standards that financial institutions can use to help accelerate their core-to-cloud journey.
 
-In this code pattern, we will create a fashion store merchant site - Here and Now - integrated with the payments API of the Open Banking Platform, and demonstrate it through a Node.js and React.js web application.The application showcases the scenario of a customer purchasing an item on the fashion store site, and making a payment directly through their bank.It has three primary sections. One where the store catalog is on display for the customer to peruse and select items they wish to purchase. The second view is the cart where all the items that the customer has shown interest in will appear for a final review before checking out. The third is after checking out, when the customer can select their payment method and complete the purchase by going through the system flow.
+In this code pattern, we will show you how to create a fashion store merchant site -- Here and Now -- that's integrated with the payments API of the IBM Open Banking Platform, and we'll demonstrate it through a Node.js and React.js web application. The application showcases the scenario of a customer purchasing an item on the fashion store site and making a payment directly through their bank. It has three primary sections:
 
-This code pattern is for developers looking to start building applications with payment integration using the Open Banking Platform. When the reader has completed this code pattern, they will understand how to:
-* Create an online store with a catalog of items open to purchase
-* Build a Node.js web application to interact with the Payments API
+1. The store catalog is on display for the customer to peruse and select items they wish to purchase.
+1. The cart where all the items that the customer has shown interest in appears for a final review before checking out.
+1. After checking out, the customer can select the payment method and complete the purchase by going through the system flow.
+
+This code pattern is for developers who are looking to start building applications with payment integration using the Open Banking Platform. When you have completed this code pattern, you will understand how to:
+
+* Create an online store with a catalog of items open to purchase.
+* Build a Node.js web application to interact with the payments API.
 
 # Architecture Flow
 ![Architecture Flow](docs/doc-images/arch-flow.png?raw=true)
 
-1. The customer enters the shopping catalog and places items in the cart to purchase.
-2. Reviews the cart and proceeds to checkout and pay.
-3. A payment initiate request is sent to IOBP to start the transaction.
-4. The IOBP initiates a single payment with the customer’s bank.
-5. The customer enters their credentials on the bank authentication page to authorize the transaction.
-6. Once successfully authenticated, the payment submission is made from the customer’s account.
+1. Customer enters the shopping catalog and places items in the cart to purchase.
+1. Customer reviews the cart and proceeds to checkout and pay.
+1. A payment initiate request is sent to the IBM Open Banking Platform to start the transaction.
+1. The IBM Open Banking Platform initiates a single payment with the customer's bank.
+1. Customer enters their credentials on the bank authentication page to authorize the transaction.
+1. Once successfully authenticated, the payment submission is made from the customer's account.
 
 # Included Components
 * [IBM Open Banking Platform v1.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform) IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
