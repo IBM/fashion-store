@@ -4,20 +4,32 @@
 
 This project is a fake fashion store that demonstrates connecting to the IBM Open Banking Platform API.  The store is built using React and Node Express server.
 
-# TODO
-1. save hostname & port as a config file to be read by app.js
-
 # Install
-run `npm install` in both the /src and /src/client folders
 
-# Build
+Run `npm install` in both the server and React client directories
 
-Build the React client from the /src/client folder
+server:
+```
+cd src
+npm install
+```
+
+client:
+```
+cd src/client
+npm install
+```
+
+# Build the React client
 
 ```
 cd src/client
 npm run build
 ```
+
+# TODO
+1. save hostname & port as a config file to be read by app.js
+
 
 # Setup
 note: check the Dockerfile & modify port as needed so you don't have conflicts.  if you change it up date the app.js
