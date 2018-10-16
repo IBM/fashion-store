@@ -2,7 +2,7 @@
 
 # ABOUT
 
-This project is a fake fashion store that demonstrates connecting to the IBM Open Banking Platform API.  The store is built using React and Node Express server.
+This project is a fashion store that demonstrates connecting to the IBM Open Banking Platform API.  The store is built using React and Node Express server.
 
 # Install
 
