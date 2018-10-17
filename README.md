@@ -145,8 +145,7 @@ Response
   + 1. `nvm install --lts`
   + 2. `nvm use --lts`
   + 3. Output `Now using node v8.11.3 (npm v5.6.0)`
-- [Docker](https://www.docker.com/)
-* Go to the docker website and download the installer. After installation, run Docker.
+- [Docker](https://www.docker.com/), Go to the docker website and download the installer. After installation, run Docker.
 
 ### 2. Clone the repository
 
