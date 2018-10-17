@@ -87,36 +87,38 @@ You should see a notification 'Successfully subscribed to this plan.'
 
 Update your local configuration file with your Client ID and Client Secret from the Payments API. The merchantId should be set in the next step, after registering your merchant.
 
-`src/conf/local.config.json`
+In the 'src/server.js' file, change the IOBP Payments API Client ID and Client Secret, and the merchantId from IOBP Admin API.
 
 ```
-{
-  "EXTERNALPORT": 8080,
-  "INTERNALPORT": 8080,
-  "PORT": 8080,
-  "PAYMENTSAPI": "https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/psd2-payments/open-banking/v1.1/",
-  "xFapiFinancialId": "0015800001041REAAY",
-  "merchantId": "REPLACE ME",
-  "clientId": "REPLACE ME",
-  "clientSecret": "REPLACE ME"
-}
+// TODO change with the client id and client secret from the IOBP Payments API
+const clientId = 'REPLACE_ME'
+const clientSecret = 'REPLACE_ME'
+// TODO change with merchantId from the IOBP Admin API 
+const merchantId = 'REPLACE_ME'
 ```
 
 ### Register your Merchant
 
 You need to register your merchant with the IBM Open Banking Platform (IOBP) because IOBP redirects the final result of the payment back to the merchant application. Use the Client ID and Client Secret of the IBM Open Banking Administration API (1.1.0) to set respectively the headers x-ibm-client-id and x-ibm-client-secret.
 
+Request
 ```
 curl --request POST \
   --url https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/iobp-administration/v1.1/merchants \
   --header 'accept: application/json' \
   --header 'content-type: application/json' \
-  --header 'x-ibm-client-id: REPLACE ME' \
-  --header 'x-ibm-client-secret: REPLACE ME' \
-  --data '{"end_date":"2019-06-15","country":"United States","redirect_uri":"http://localhost:8080","countrySubDivision":"New York","taxId":"be2e44b06b34","name":"REPLACE ME","streetAddress1":"678 Lafayette Ave","effective_date":"2018-06-15","streetAddress2":"Suite 2B","postCode":"10003","cityOrTown":"New York"}'
+  --header 'x-ibm-client-id: REPLACE_ME' \
+  --header 'x-ibm-client-secret: REPLACE_ME' \
+  --data '{"end_date":"2019-06-15","country":"United States","redirect_uri":"http://localhost:8080","countrySubDivision":"New York","taxId":"be2e44b06b34","name":"Remko Homestore","streetAddress1":"678 Lafayette Ave","effective_date":"2018-06-15","streetAddress2":"Suite 2B","postCode":"10003","cityOrTown":"New York"}'
 ```
 
-You need the merchantId that is generated for you, to configure your local.config.json/merchantId property.
+You need the merchantId that is generated for you, to configure your merchantId variable in 'src/server.js'.
+
+Response
+```
+...
+"merchantId":"214b72a0-d241-11e8-a47f-eb7905db5dda"}
+```
 
 # Running the Application
 

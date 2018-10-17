@@ -1,16 +1,18 @@
+/** ******* CONFIGURATION FOR IBM OPEN BANKING PLATFORM ******* */
+
+// base_url of the IOBP Payments API
+const gateway_url = "https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/psd2-payments/open-banking/v1.1/"
+// TODO change with the client id and client secret from the IOBP Payments API
+const clientId = 'REPLACE_ME'
+const clientSecret = 'REPLACE_ME'
+// TODO change with merchantId from the IOBP Admin API 
+const merchantId = 'REPLACE_ME'
+
+/** ************ NO NEED TO CHANGE BEYOND HERE **************** */
+
 let express = require( 'express' )
 let request = require( 'request' )
 let bodyParser = require( 'body-parser' )
-
-const gateway_url = "https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/psd2-payments/open-banking/v1.1/"
-//const gateway_url = "http://localhost:8400/open-banking/v1.1/"
-
-// TODO get the merchantID from the merchant-onboarding api since it will be different per local system
-const merchantId = "1234"
-
-// TODO replace with your own client id/secret from registering your merchant with the IBM Open Banking Platform
-const clientId = '{REPLACE_ME}'
-const clientSecret = '{REPLACE_ME}'
 
 let paymentInits = {}
 let app = express()
