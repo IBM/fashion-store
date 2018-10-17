@@ -92,31 +92,37 @@ To authenticate your requests you need to obtain a clientId and clientSecret.
 
 10. Open a new tab and go to the IOBP Admin API portal https://iobp-administration-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
+![Screenshot](docs/doc-images/10.png?raw=true)
 
 11. Login. Enter Organization name.
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
+![Screenshot](docs/doc-images/11.png?raw=true)
 
 12. Go to API Products, IBM Open Banking Administration API (1.1.0). Subscribe to the Default Plan
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
+![Screenshot](docs/doc-images/12a.png?raw=true)
+
+![Screenshot](docs/doc-images/12b.png?raw=true)
+
+![Screenshot](docs/doc-images/12c.png?raw=true)
 
 13. Register a new application by filling the 'Title', 'Description'. Set `'OAuth Redirect URI': http://localhost:8080`. Submit
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
+![Screenshot](docs/doc-images/13.png?raw=true)
 
 14. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
+![Screenshot](docs/doc-images/14.png?raw=true)
 
 15. Copy-paste you Client ID and Client Secret, you need this later
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
-
 16. Go to API Products, IBM Open Banking Administration API (1.1.0), click Subscribe. Select your new application to subscribe and click Subscribe. You should see a notification 'Successfully subscribed to this plan'.
 
-![Screenshot](docs/doc-images/9b.png?raw=true)
+![Screenshot](docs/doc-images/16a.png?raw=true)
+
+![Screenshot](docs/doc-images/16b.png?raw=true)
+
+![Screenshot](docs/doc-images/16c.png?raw=true)
 
 ### Update the code with clientId and Secret
 
