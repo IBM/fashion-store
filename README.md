@@ -65,22 +65,24 @@ OAuth Redirect URI: http://localhost:8080
 
 ### Update code withe clientId and Secret
 
-Update your node server with your clientId and clientSecret
+Update your local configuration file with your Client ID and Client Secret from the Payments API.
 
-`src/server.js`
+`src/conf/local.config.json`
 
 ```
-const clientId = '{REPLACE_ME}'
-const clientSecret = '{REPLACE_ME}'
+  "clientId": "REPLACE ME",
+  "clientSecret": "REPLACE ME"
 ```
 
 # Running the Application
+
 ## Manually deploy to local machine
 1. [Setup your machine](#1-setup-your-machine)
 2. [Clone the repository](#2-clone-the-repository)
-3. [Run application in Docker container](#3-run-application-in-docker-container)
+3. [Run application in Docker container](#3-run-with-docker) OR [Run application with npm](#3-run-with-nodejs)
 
 ### 1. Setup your machine
+- [Node.js](https://nodejs.org/en/)
 - [Docker](https://www.docker.com/)
 	Go to the docker website and download the installer. After installation, run Docker.
 
@@ -90,14 +92,23 @@ const clientSecret = '{REPLACE_ME}'
 git clone https://github.ibm.com/Banksy/fashion-store.git
 ```
 
-### 3. Run application in Docker container
+### 3. Run with Nodejs
 
 ```
-bash docker-run.sh
+$ npm install --save
+$ npm start
 ```
+
+### 3. Run with Docker
+
+```
+$ bash docker-run.sh
+```
+
 By default the application runs on port 8080. (This can be changed in `src/conf/local.config.json`)
 
 View the application by typing `http://localhost:8080` in a browser.
 
 # License
+
 [Apache 2.0](LICENSE)
