@@ -23,7 +23,6 @@ describe( 'get banks', () =>
             .send( data )
             .expect( 200 )
             .then( response => {
-                // TODO assert that paymentId is in response
                 assert.isOk( response.body.redirect_url, 'missing redirect_url from response' )
 
                 console.log( response.body.redirect_url )
@@ -42,7 +41,6 @@ describe( 'get banks', () =>
             .send( data )
             .expect( 200 )
             .then( response => {
-                // TODO assert that paymentId is in response
                 assert.isOk( response.body.redirect_url, 'missing redirect_url from response' )
 
                 console.log( response.body.redirect_url )

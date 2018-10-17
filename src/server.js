@@ -200,7 +200,6 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
         console.log( '/payments response redirect_url: ' + redirectUrl )
 
-        // TODO might need to save the paymentId.... how will I know what payment data the code belongs to?
         res.json( { paymentId, redirect_url: redirectUrl } )
     } )
 } )
