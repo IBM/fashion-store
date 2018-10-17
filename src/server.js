@@ -1,6 +1,3 @@
-// This application uses express as its web server
-// for more info, see: http://expressjs.com
-
 let express = require( 'express' )
 let request = require( 'request' )
 let bodyParser = require( 'body-parser' )
@@ -31,7 +28,6 @@ app.use( function ( err, req, res, next )
 {
     res.end( JSON.stringify( { error: err } ) )
 } )
-
 
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
@@ -187,7 +183,6 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
 
         console.log( '/payments response redirect_url: ' + redirectUrl )
 
-        // TODO might need to save the paymentId.... how will I know what payment data the code belongs to?
         res.json( { paymentId, redirect_url: redirectUrl } )
     } )
 } )

@@ -13,8 +13,6 @@ import { fetchBanks } from '../actions/store.actions'
 import Checkout from './Checkout'
 import Spinner from 'react-spinkit'
 
-// TODO dispatch is so they can remove items from the cart.  Low priority
-// TODO prob need row/col instead of media component so things line up better
 const ItemRow = ( { item, dispatch } ) => (
 
     <Row style={{ marginTop: 10 }}>
