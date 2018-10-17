@@ -137,9 +137,16 @@ Response
 3. [Run application in Docker container](#3-run-with-docker) OR [Run application with npm](#3-run-with-nodejs)
 
 ### 1. Setup your machine
-- [Node.js](https://nodejs.org/en/)
+- [npm](https://www.npmjs.com/)  (v5.x)
+- [Node](https://nodejs.org/en/) (version 8.9 or higher - note version 9 is not supported)
+* to install specific Node version you can use [nvm](https://hyperledger.github.io/composer/latest/installing/installing-prereqs.html)
+
+  Example:
+  + 1. `nvm install --lts`
+  + 2. `nvm use --lts`
+  + 3. Output `Now using node v8.11.3 (npm v5.6.0)`
 - [Docker](https://www.docker.com/)
-	Go to the docker website and download the installer. After installation, run Docker.
+* Go to the docker website and download the installer. After installation, run Docker.
 
 ### 2. Clone the repository
 
@@ -168,16 +175,16 @@ $ docker logs fashion-store
 ### Make a purchase
 By default the application runs on port 8080. (This can be changed in `src/conf/local.config.json`)
 
-1. Open the Here & Now store at [http://localhost:8080](http://localhost:8080)
+1. Open the `Here & Now` store at [http://localhost:8080](http://localhost:8080)
 1. Click Shop to shop
-1. Add an item tot he cart
-1. In the top right, click 'Cart(1)'
-1. Review your shopping cart, click 'CHECKOUT'
+1. Add an item to the cart
+1. In the top right, click `Cart(1)`
+1. Review your shopping cart, click `CHECKOUT`
 1. Select the Bank icon on the left, this should load the avaible banks
 1. Select the Forgerock bank
-1. Click the 'Pay Now' button
+1. Click the `Pay Now` button
 1. The Payment Setup response will redirect you to the bank login page
-1. Login with 'username/password' (REPLACE_ME)
+1. Login with `username/password` (REPLACE_ME)
 1. Select the 'Pay from' account and click the 'Allow' button
 1. This will then result in running the Payment Submission
 1. After a successful payment submission, the Payment Submission response will redirect to the redirect_uri of the merchant, which we defined as http://localhost:8080
