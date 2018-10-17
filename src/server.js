@@ -1,41 +1,22 @@
-// This application uses express as its web server
-// for more info, see: http://expressjs.com
-let config = require( __dirname + '/conf/local.config.json' )
-
 let express = require( 'express' )
-let path = require( 'path' )
 let request = require( 'request' )
 let bodyParser = require( 'body-parser' )
-const url = require( 'url' )
-let session = require( 'express-session' )
-let fetch = require( 'node-fetch' )
-const URLSearchParams = require( 'url-search-params' )
-var jwtDecode = require( 'jwt-decode' )
 
-let data = new URLSearchParams()
+const gateway_url = "https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/psd2-payments/open-banking/v1.1/"
+//const gateway_url = "http://localhost:8400/open-banking/v1.1/"
 
-let port = config.PORT
+// TODO get the merchantID from the merchant-onboarding api since it will be different per local system
+const merchantId = "1234"
 
-let gateway_url = config.PAYMENTSAPI
-
-console.log( ' gateway: %s', gateway_url )
+// TODO replace with your own client id/secret from registering your merchant with the IBM Open Banking Platform
+const clientId = '{REPLACE_ME}'
+const clientSecret = '{REPLACE_ME}'
 
 let paymentInits = {}
-
-const merchantId = config.merchantId
-
-let code = null
-
-let cfenv = require( 'cfenv' )
 let app = express()
 
+// make the React client public
 app.use( '/', express.static( `${__dirname}/client/build` ) )
-
-app.use( session( {
-    secret: 'sdfrsedterdsafaasdf',
-    resave: true,
-    saveUninitialized: true
-} ) )
 
 // for parsing incoming requests
 app.use( bodyParser.json() )       // to support JSON-encoded bodies
@@ -48,8 +29,6 @@ app.use( function ( err, req, res, next )
     res.end( JSON.stringify( { error: err } ) )
 } )
 
-let appEnv = cfenv.getAppEnv()
-
 app.get( '/gateway/open-banking/banks', function ( req, res )
 {
     console.log( '>>> /gateway/open-banking/banks' )
@@ -59,36 +38,34 @@ app.get( '/gateway/open-banking/banks', function ( req, res )
     console.log( 'calling api-endpoint-controller: ' + apiEndpointControllerUrl )
 
     let options = {
+        url: apiEndpointControllerUrl,
         'headers': {
             'content-type': 'application/json',
             'accept': 'application/json',
-            'X-IBM-Client-Id': config.clientId,
-            'X-IBM-Client-Secret': config.clientSecret
-        }
+            'X-IBM-Client-Id': clientId,
+            'X-IBM-Client-Secret': clientSecret
+        },
+        agentOptions: {
+            securityOptions: 'SSL_OP_NO_SSLv3'
+        },
+        rejectUnauthorized: false,
+        requestCert: true,
+        agent: false,
+        json: true
     }
 
-    fetch( apiEndpointControllerUrl, options )
-        .then( response =>
+    request( options, function ( error, response, body )
+    {
+        if( error )
         {
-
-            if ( response.status !== 200 )
-            {
-                res.status( response.status ).send()
-                throw('unexpected status: ' + response.status)
-            }
-
-            return response.json()
-        } )
-        .then( json =>
+            console.error( error )
+            res.status( 500 ).send( error )
+        }
+        else
         {
-            console.log( json )
-            res.json( json )
-        } )
-        .catch( error =>
-        {
-            console.log( 'ERROR getting banks: ' + error )
-            res.status( 500 ).send()
-        } )
+            res.json( body )
+        }
+    })
 } )
 
 app.post( '/gateway/open-banking/payments', function ( req, res )
@@ -164,10 +141,16 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
             "x-idempotency-key": 1,
             "x-jws-signature": 1,
             "merchantId": merchantId,
-            'X-IBM-Client-Id': config.clientId,
-            'X-IBM-Client-Secret': config.clientSecret,
+            'X-IBM-Client-Id': clientId,
+            'X-IBM-Client-Secret': clientSecret,
         },
         "body": paymentSetupRequest,
+        agentOptions: {
+            securityOptions: 'SSL_OP_NO_SSLv3'
+        },
+        rejectUnauthorized: false,
+        requestCert: true,
+        agent: false,
         json: true
     }
 
@@ -204,74 +187,17 @@ app.post( '/gateway/open-banking/payments', function ( req, res )
     } )
 } )
 
+let port = 8080
 
-app.get( '/gateway/open-banking/payment-submissions', function ( req, res )
-{
-    try
-    {
-        let url = gateway_url + 'payment-submissions'
-        let code = req.query.code
-
-        console.log( 'decoding jwt: ' + req.query.id_token )
-
-        var decoded = jwtDecode( req.query.id_token )
-
-        let paymentId = decoded.openbanking_intent_id
-
-        let paymentRequest = paymentInits[ paymentId ]
-
-        let body = paymentRequest.body
-
-        let options = {
-            url: url,
-            headers: {
-                "authorization": "Bearer",
-                "accept": "application/json",
-                "content-type": "application/json",
-                "x-fapi-financial-id": paymentRequest.xFapiFinancialId,
-                "x-fapi-interaction-id": 1,
-                "x-idempotency-key": 1,
-                "merchantId": merchantId,
-                "code": code,
-                'X-IBM-Client-Id': config.clientId,
-                'X-IBM-Client-Secret': config.clientSecret
-            },
-            body: body,
-            json: true
-        }
-
-        request.post( options, function ( error, response, body )
-        {
-            if ( error )
-            {
-                console.log( 'error:', error )
-                res.status( 500 ).send( error )
-                return
-            }
-
-            // Print the error if one occurred
-            console.log( 'statusCode:', response && response.statusCode ) // Print the response status code if a response was received
-            console.log( 'body:', body ) // print the body
-
-            res.json( response.body )
-        } )
-    }
-    catch ( error )
-    {
-        console.log( 'ERROR [/gateway/open-banking/payment-submissions] ' + error )
-        res.status( 500 ).send( error )
-    }
-} )
-
-// the cfenv library will not reflect a change to the port in it's url
-// so hack in the correct values - ok while it works...
+// get the app environment from Cloud Foundry
+let cfenv = require( 'cfenv' )
+let appEnv = cfenv.getAppEnv()
 if ( appEnv.isLocal )
 {
     appEnv.url = appEnv.url.replace( appEnv.port, port )
     appEnv.port = port
 }
 
-console.log( appEnv.port )
 // start server on the specified port and binding host
 module.exports = app.listen( port, '0.0.0.0', function ()
 {
