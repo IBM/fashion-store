@@ -41,6 +41,7 @@ This code pattern is for developers who are looking to start building applicatio
 * React.js
 * Docker
 * REST API
+* curl
 
 # Register with the IBM Open Banking Platform
 
@@ -64,29 +65,58 @@ Description:
 OAuth Redirect URI: http://localhost:8080
 Submit
 7. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
-8. Copy-paste you Client ID and Client Secret
-9. Open a new tab and go to the IOBP Admin API portal https://iobp-administration-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com
-10. Login
+8. Copy-paste you Client ID and Client Secret, you need this later
+9. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), click Subscribe
+Select your new application to subscribe and click Subscribe
+You should see a notification 'Successfully subscribed to this plan.'
+10. Open a new tab and go to the IOBP Admin API portal https://iobp-administration-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com
+11. Login
 Organization name: 
-11. Go to API Products, IBM Open Banking Administration API (1.1.0), Subscribe to the Default Plan
-12. Register a new application:
+12. Go to API Products, IBM Open Banking Administration API (1.1.0), Subscribe to the Default Plan
+13. Register a new application:
 Title:
 Description:
 OAuth Redirect URI: http://localhost:8080
-13. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
-14. Copy-paste you Client ID and Client Secret
-
+14. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
+15. Copy-paste you Client ID and Client Secret, you need this later
+16. Go to API Products, IBM Open Banking Administration API (1.1.0), click Subscribe
+Select your new application to subscribe and click Subscribe
+You should see a notification 'Successfully subscribed to this plan.'
 
 ### Update code withe clientId and Secret
 
-Update your local configuration file with your Client ID and Client Secret from the Payments API.
+Update your local configuration file with your Client ID and Client Secret from the Payments API. The merchantId should be set in the next step, after registering your merchant.
 
 `src/conf/local.config.json`
 
 ```
+{
+  "EXTERNALPORT": 8080,
+  "INTERNALPORT": 8080,
+  "PORT": 8080,
+  "PAYMENTSAPI": "https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/psd2-payments/open-banking/v1.1/",
+  "xFapiFinancialId": "0015800001041REAAY",
+  "merchantId": "REPLACE ME",
   "clientId": "REPLACE ME",
   "clientSecret": "REPLACE ME"
+}
 ```
+
+### Register your Merchant
+
+You need to register your merchant with the IBM Open Banking Platform (IOBP) because IOBP redirects the final result of the payment back to the merchant application. Use the Client ID and Client Secret of the IBM Open Banking Administration API (1.1.0) to set respectively the headers x-ibm-client-id and x-ibm-client-secret.
+
+```
+curl --request POST \
+  --url https://api.us.apiconnect.ibmcloud.com/ibmopenbanking-demo/iobp-administration/v1.1/merchants \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --header 'x-ibm-client-id: REPLACE ME' \
+  --header 'x-ibm-client-secret: REPLACE ME' \
+  --data '{"end_date":"2019-06-15","country":"United States","redirect_uri":"http://localhost:8080","countrySubDivision":"New York","taxId":"be2e44b06b34","name":"REPLACE ME","streetAddress1":"678 Lafayette Ave","effective_date":"2018-06-15","streetAddress2":"Suite 2B","postCode":"10003","cityOrTown":"New York"}'
+```
+
+You need the merchantId that is generated for you, to configure your local.config.json/merchantId property.
 
 # Running the Application
 
@@ -119,9 +149,21 @@ $ npm start
 $ bash docker-run.sh
 ```
 
+You can view the docker logs of your store,
+```
+$ docker logs fashion-store
+```
+
+### Make a purchase
 By default the application runs on port 8080. (This can be changed in `src/conf/local.config.json`)
 
-View the application by typing `http://localhost:8080` in a browser.
+1. Open the Here & Now store at [http://localhost:8080](http://localhost:8080)
+1. Click Shop to shop
+1. Add an item tot he cart
+1. In the top right, click 'Cart(1)'
+1. Review your shopping cart, click 'CHECKOUT'
+1. Select the Bank icon on the left, this should load the avaible banks
+1. 
 
 # License
 
