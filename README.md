@@ -32,26 +32,24 @@ This code pattern is for developers who are looking to start building applicatio
 
 # Included Components
 
-* [IBM Open Banking Platform v1.1.0.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform) IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
+* [IBM Open Banking Platform v1.1.0.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform), IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
 * [API Connect](https://www.ibm.com/cloud/api-connect), a comprehensive API management solution for your entire API lifecycle from creation to management
+* [IBM Cloud Private](https://www.ibm.com/cloud/private), Open Kubernetes-based container platform with Cloud Foundry for application development and deployment, along with DevOps toolchain integration
 
 ## Featured Technologies
 
-* [Nodejs](https://www.python.org/) Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code server-side
-* React.js
-* Docker
-* REST API
-* curl
+* [Nodejs](https://www.nodejs.org/) Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code server-side
+* [Reactjs](https://reactjs.org/) React.js is a JavaScript library for building user interfaces
+* [Docker](https://www.docker.com/) Docker is a computer program that performs operating-system-level virtualization, also known as Containerization
+* [Curl](https://curl.haxx.se/) Curl is a command line tool and library for transferring data with URLs
+* [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer) Representational State Transfer (REST) is an architectural style that defines a set of constraints to be used for creating web services
 
 # Register with the IBM Open Banking Platform
 
 To authenticate your requests you need to obtain a clientId and clientSecret. 
 
-1. If you dont have an IBMid yet, create an IBMid, https://www.ibm.com/account/us-en/signup/register.html
-Click Continue, Proceed, 
-Check your email for the 7-digit security code, copy-paste, Verify
-2. Create an account with an IBMid
-Go to the IOBP Payments API portal https://psd2-payments-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com/
+1. If you dont have an IBMid yet, create an IBMid, https://www.ibm.com/account/us-en/signup/register.html. Click Continue, Proceed, Check your email for the 7-digit security code, copy-paste, Verify.
+2. Create an account with an IBMid. Go to the IOBP Payments API portal https://psd2-payments-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com/
 3. Developer organization:
 Username: (unique for the portal)
 Captcha:
@@ -68,20 +66,7 @@ Submit
 8. Copy-paste you Client ID and Client Secret, you need this later
 9. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), click Subscribe
 Select your new application to subscribe and click Subscribe
-You should see a notification 'Successfully subscribed to this plan.'
-10. Open a new tab and go to the IOBP Admin API portal https://iobp-administration-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com
-11. Login
-Organization name: 
-12. Go to API Products, IBM Open Banking Administration API (1.1.0), Subscribe to the Default Plan
-13. Register a new application:
-Title:
-Description:
-OAuth Redirect URI: http://localhost:8080
-14. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
-15. Copy-paste you Client ID and Client Secret, you need this later
-16. Go to API Products, IBM Open Banking Administration API (1.1.0), click Subscribe
-Select your new application to subscribe and click Subscribe
-You should see a notification 'Successfully subscribed to this plan.'
+You should see a notification 'Successfully subscribed to this plan'.
 
 ### Update code withe clientId and Secret
 
