@@ -32,7 +32,7 @@ This code pattern is for developers who are looking to start building applicatio
 
 # Included Components
 
-* [IBM Open Banking Platform v1.1.0.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform), IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
+* [IBM Open Banking Platform v1.1.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform), IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
 * [API Connect](https://www.ibm.com/cloud/api-connect), a comprehensive API management solution for your entire API lifecycle from creation to management
 * [IBM Cloud Private](https://www.ibm.com/cloud/private), Open Kubernetes-based container platform with Cloud Foundry for application development and deployment, along with DevOps toolchain integration
 
@@ -49,24 +49,46 @@ This code pattern is for developers who are looking to start building applicatio
 To authenticate your requests you need to obtain a clientId and clientSecret. 
 
 1. If you dont have an IBMid yet, create an IBMid, https://www.ibm.com/account/us-en/signup/register.html. Click Continue, Proceed, Check your email for the 7-digit security code, copy-paste, Verify.
+
+![Screenshot](docs/doc-images/1.png?raw=true)
+
 2. Create an account with an IBMid. Go to the IOBP Payments API portal https://psd2-payments-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com/
-3. Developer organization:
-Username: (unique for the portal)
-Captcha:
-Create new account
-4. Login
-Enter 'Organization name: 
+
+![Screenshot](docs/doc-images/2.png?raw=true)
+
+3. Fill the form by entering 'Developer organization', 'Username' (unique for the portal) and 'Captcha'. Create new account.
+
+![Screenshot](docs/doc-images/3a.png?raw=true)
+
+![Screenshot](docs/doc-images/3b.png?raw=true)
+
+4. Login. Enter 'Organization name'
+
+![Screenshot](docs/doc-images/4.png?raw=true)
+
 5. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), Subscribe to the Default Plan
-6. Register a new application:
-Title:
-Description:
-OAuth Redirect URI: http://localhost:8080
-Submit
+
+![Screenshot](docs/doc-images/5a.png?raw=true)
+
+![Screenshot](docs/doc-images/5b.png?raw=true)
+
+![Screenshot](docs/doc-images/5c.png?raw=true)
+
+6. Register a new application by filling the 'Title', 'Description'. Set `'OAuth Redirect URI': http://localhost:8080`. Submit
+
+![Screenshot](docs/doc-images/6.png?raw=true)
+
 7. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
+
+![Screenshot](docs/doc-images/7.png?raw=true)
+
 8. Copy-paste you Client ID and Client Secret, you need this later
-9. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), click Subscribe
-Select your new application to subscribe and click Subscribe
-You should see a notification 'Successfully subscribed to this plan'.
+
+9. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), click Subscribe. Select your new application to subscribe and click Subscribe. You should see a notification 'Successfully subscribed to this plan'.
+
+![Screenshot](docs/doc-images/9a.png?raw=true)
+
+![Screenshot](docs/doc-images/9b.png?raw=true)
 
 ### Update code withe clientId and Secret
 
