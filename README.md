@@ -30,12 +30,42 @@ This code pattern is for developers who are looking to start building applicatio
 
 # Register with the IBM Open Banking Platform
 
-To obtains a clientId and clientSecret, register:
-https://github.ibm.com/Banksy/banksy/wiki/Demo-System
+To authenticate your requests you need to obtain a clientId and clientSecret. 
+
+1. If you dont have an IBMid yet, create an IBMid, https://www.ibm.com/account/us-en/signup/register.html
+Click Continue, Proceed, 
+Check your email for the 7-digit security code, copy-paste, Verify
+2. Create an account with an IBMid
+Go to the IOBP Payments API portal https://psd2-payments-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com/
+3. Developer organization:
+Username: (unique for the portal)
+Captcha:
+Create new account
+4. Login
+Enter 'Organization name: 
+5. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), Subscribe to the Default Plan
+6. Register a new application:
+Title:
+Description:
+OAuth Redirect URI: http://localhost:8080
+Submit
+7. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
+8. Copy-paste you Client ID and Client Secret
+9. Open a new tab and go to the IOBP Admin API portal https://iobp-administration-ibmopenbanking-demo.developer.us.apiconnect.ibmcloud.com
+10. Login
+Organization name: 
+11. Go to API Products, IBM Open Banking Administration API (1.1.0), Subscribe to the Default Plan
+12. Register a new application:
+Title:
+Description:
+OAuth Redirect URI: http://localhost:8080
+13. You now have a Client ID (Show next to the Details>Credentials>Client ID) and a Client Secret (Show Client Secret on top of the page)
+14. Copy-paste you Client ID and Client Secret
+
 
 ### Update code withe clientId and Secret
 
-Update your node server with your clientId and clientSecert
+Update your node server with your clientId and clientSecret
 
 `src/server.js`
 
