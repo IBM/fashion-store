@@ -1,18 +1,26 @@
 # Fashion Store with IBM Open Banking Platform
-Imagine you are bank that wants the agility of a digital platform but you are averse to the risks of replacing legacy systems or moving directly to the public cloud. You might be seeking accelerators for your digital transformations, or you may be driven by new regulation and compliance -- or perhaps you're simply on the lookout of opportunities to unlock new digital channels and revenue streams. Your clients want to integrate with direct payments from banks to accommodate customers' needs while making purchases, securely and easily. The IBM Open Banking Platform is a software-as-a-service suite built on certain predefined industry standards that financial institutions can use to help accelerate their core-to-cloud journey.
 
-In this code pattern, we will show you how to create a fashion store merchant site -- Here and Now -- that's integrated with the payments API of the IBM Open Banking Platform, and we'll demonstrate it through a Node.js and React.js web application. The application showcases the scenario of a customer purchasing an item on the fashion store site and making a payment directly through their bank. It has three primary sections:
+Imagine you are a merchant with an online store and your customers want to integrate with direct payments from banks to accommodate making purchases, securely and easily. 
+
+Or imagine you are a bank and want to offer an easy way for merchants to integrate digital direct payments into your legacy bank systems in order to unlock new digital channels and revenue streams and compete against the many online payment services, but you are averse to the risks of replacing legacy systems or moving directly to the public cloud. But you also need to comply to new regulation and compliance. 
+
+The IBM Open Banking Platform (IOBP) is a banking-as-a-service suite built on certain predefined industry standards that financial institutions can use to help accelerate their core-to-cloud journey.
+
+In this code pattern, we will show you how to create a fashion store merchant site -- Here and Now -- that integrates with the IOBP Payments API of the IBM Open Banking Platform (IOBP). We will demonstrate a Node.js and React.js web application using REST API. The application showcases the scenario of a customer purchasing an item on the fashion store site and making a payment directly through their bank via the IBM Open Banking Platform (IOBP). 
+
+It has three primary sections:
 
 1. The store catalog is on display for the customer to peruse and select items they wish to purchase.
-1. The cart where all the items that the customer has shown interest in appears for a final review before checking out.
-1. After checking out, the customer can select the payment method and complete the purchase by going through the system flow.
+1. The shopping cart where all the items that the customer has shown interest in appears for a final review before checking out.
+1. After checking out, the customer can select the payment method and complete the purchase by going through the payment flow.
 
-This code pattern is for developers who are looking to start building applications with payment integration using the Open Banking Platform. When you have completed this code pattern, you will understand how to:
+This code pattern is for developers who are looking to start building applications with payment integration using the IBM Open Banking Platform (IOBP). When you have completed this code pattern, you will understand how to:
 
 * Create an online store with a catalog of items open to purchase.
-* Build a Node.js web application to interact with the payments API.
+* Build a Node.js/React.js web application to interact with the IOBP Payments API.
 
 # Architecture Flow
+
 ![Architecture Flow](docs/doc-images/arch-flow.png?raw=true)
 
 1. Customer enters the shopping catalog and places items in the cart to purchase.
@@ -23,10 +31,16 @@ This code pattern is for developers who are looking to start building applicatio
 1. Once successfully authenticated, the payment submission is made from the customer's account.
 
 # Included Components
-* [IBM Open Banking Platform v1.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform) IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
+
+* [IBM Open Banking Platform v1.1.0.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform) IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
+* [API Connect](https://www.ibm.com/cloud/api-connect), a comprehensive API management solution for your entire API lifecycle from creation to management
 
 ## Featured Technologies
+
 * [Nodejs](https://www.python.org/) Node.js is an open-source, cross-platform JavaScript run-time environment that executes JavaScript code server-side
+* React.js
+* Docker
+* REST API
 
 # Register with the IBM Open Banking Platform
 
