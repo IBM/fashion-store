@@ -206,7 +206,7 @@ $ docker logs fashion-store
 ```
 
 ### Make a purchase
-By default the application runs on port 8080. (This can be changed in `src/conf/local.config.json`)
+By default the application runs on port 8080.
 
 1. Open the `Here & Now` store at [http://localhost:8080](http://localhost:8080)
 1. Click Shop to shop
@@ -218,7 +218,7 @@ By default the application runs on port 8080. (This can be changed in `src/conf/
 1. Click the `Pay Now` button
 1. The Payment Setup response will redirect you to the bank login page
 1. Login with `username/password` (REPLACE_ME)
-1. Select the 'Pay from' account and click the 'Allow' button
+1. Select the `Pay from` account and click the `Allow` button
 1. This will then result in running the Payment Submission
 1. After a successful payment submission, the Payment Submission response will redirect to the redirect_uri of the merchant, which we defined as http://localhost:8080
 1. Your merchant will load with a Successful Payment notification
