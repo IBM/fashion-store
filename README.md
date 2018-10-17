@@ -90,7 +90,7 @@ To authenticate your requests you need to obtain a clientId and clientSecret.
 
 ![Screenshot](docs/doc-images/9b.png?raw=true)
 
-### Update code withe clientId and Secret
+### Update the code with clientId and Secret
 
 Update your local configuration file with your Client ID and Client Secret from the Payments API. The merchantId should be set in the next step, after registering your merchant.
 
@@ -103,6 +103,8 @@ const clientSecret = 'REPLACE_ME'
 // TODO change with merchantId from the IOBP Admin API 
 const merchantId = 'REPLACE_ME'
 ```
+
+The `merchantId` will be generated after the next step.
 
 ### Register your Merchant
 
