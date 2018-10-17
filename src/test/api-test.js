@@ -1,5 +1,3 @@
-process.env.NODE_ENV = 'local'
-
 let _ = require( 'lodash' )
 let assert = require( 'chai' ).assert
 let request = require( 'supertest' )

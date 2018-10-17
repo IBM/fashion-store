@@ -1,7 +1,6 @@
 // This application uses express as its web server
 // for more info, see: http://expressjs.com
-
-let config = require( __dirname + '/conf/' + process.env.NODE_ENV + '.config.json' )
+let config = require( __dirname + '/conf/local.config.json' )
 
 let express = require( 'express' )
 let path = require( 'path' )
@@ -16,9 +15,6 @@ var jwtDecode = require( 'jwt-decode' )
 let data = new URLSearchParams()
 
 let port = config.PORT
-//let gateway_url = 'http://localhost:8400/open-banking/' //'https://citigatewaynode-determined-coelom.eu-gb.mybluemix.net/open-banking/'
-//let gateway_url = 'http://apollo11.fyre.ibm.com:8400/open-banking/'
-
 
 let gateway_url = config.PAYMENTSAPI
 
@@ -26,8 +22,6 @@ console.log( ' gateway: %s', gateway_url )
 
 let paymentInits = {}
 
-// TODO get the merchantID from the merchant-onboarding api since it will be different per local system
-//const xFapiFinancialId = config.xFapiFinancialId
 const merchantId = config.merchantId
 
 let code = null
@@ -35,14 +29,8 @@ let code = null
 let cfenv = require( 'cfenv' )
 let app = express()
 
-
 app.use( '/', express.static( `${__dirname}/client/build` ) )
 
-// serve the files out of ./public as our main files
-//app.use( express.static( path.join( __dirname, '/public' ) ) )
-
-//app.use( '/callback', express.static( path.join( __dirname, '/public/tmp' ) ) )
-// session tokens
 app.use( session( {
     secret: 'sdfrsedterdsafaasdf',
     resave: true,
@@ -60,7 +48,6 @@ app.use( function ( err, req, res, next )
     res.end( JSON.stringify( { error: err } ) )
 } )
 
-// get the app environment from Cloud Foundry
 let appEnv = cfenv.getAppEnv()
 
 app.get( '/gateway/open-banking/banks', function ( req, res )
