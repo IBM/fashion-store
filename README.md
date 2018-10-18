@@ -217,7 +217,8 @@ By default the application runs on port 8080.
 1. Select the Forgerock bank
 1. Click the `Pay Now` button
 1. The Payment Setup response will redirect you to the bank login page
-1. Login with `username/password` (REPLACE_ME)
+1. Register on the Forgerock bank page for a new account
+1. Login with `username/password`
 1. Select the `Pay from` account and click the `Allow` button
 1. This will then result in running the Payment Submission
 1. After a successful payment submission, the Payment Submission response will redirect to the redirect_uri of the merchant, which we defined as http://localhost:8080
