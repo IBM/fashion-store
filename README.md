@@ -34,7 +34,6 @@ This code pattern is for developers who are looking to start building applicatio
 
 * [IBM Open Banking Platform v1.1.0](https://console.bluemix.net/docs/services/open-banking-platform/index.html#getting-started-with-ibm-open-banking-platform), IBM Open Banking Platform is a software suite that accelerates a bank's transformation to a platform economy
 * [API Connect](https://www.ibm.com/cloud/api-connect), a comprehensive API management solution for your entire API lifecycle from creation to management
-* [IBM Cloud Private](https://www.ibm.com/cloud/private), Open Kubernetes-based container platform with Cloud Foundry for application development and deployment, along with DevOps toolchain integration
 
 ## Featured Technologies
 
@@ -46,7 +45,7 @@ This code pattern is for developers who are looking to start building applicatio
 
 # Register with the IBM Open Banking Platform
 
-To authenticate your requests you need to obtain a clientId and clientSecret. 
+To authenticate your requests you need to obtain a Client ID and Client Secret. 
 
 1. If you dont have an IBMid yet, create an IBMid, https://www.ibm.com/account/us-en/signup/register.html. Click Continue, Proceed, Check your email for the 7-digit security code, copy-paste, Verify.
 
@@ -82,7 +81,7 @@ To authenticate your requests you need to obtain a clientId and clientSecret.
 
 ![Screenshot](docs/doc-images/7.png?raw=true)
 
-8. Copy-paste you Client ID and Client Secret, you need this later
+8. Copy-paste your Client ID and Client Secret, you need this later
 
 9. Go to API Products, IBM Open Banking Payment Initiation API (1.1.0), click Subscribe. Select your new application to subscribe and click Subscribe. You should see a notification 'Successfully subscribed to this plan'.
 
@@ -114,7 +113,7 @@ To authenticate your requests you need to obtain a clientId and clientSecret.
 
 ![Screenshot](docs/doc-images/14.png?raw=true)
 
-15. Copy-paste you Client ID and Client Secret, you need this later
+15. Copy-paste your Client ID and Client Secret, you need this later
 
 16. Go to API Products, IBM Open Banking Administration API (1.1.0), click Subscribe. Select your new application to subscribe and click Subscribe. You should see a notification 'Successfully subscribed to this plan'.
 
@@ -124,14 +123,14 @@ To authenticate your requests you need to obtain a clientId and clientSecret.
 
 ![Screenshot](docs/doc-images/16c.png?raw=true)
 
-### Update the code with clientId and Secret
+### Update the code with Client ID and Client Secret
 
 Update your local configuration file with your Client ID and Client Secret from the Payments API. The merchantId should be set in the next step, after registering your merchant.
 
 In the 'src/server.js' file, change the IOBP Payments API Client ID and Client Secret, and the merchantId from IOBP Admin API.
 
 ```
-// TODO change with the client id and client secret from the IOBP Payments API
+// TODO change with the Client ID and Client Secret from the IOBP Payments API
 const clientId = 'REPLACE_ME'
 const clientSecret = 'REPLACE_ME'
 // TODO change with merchantId from the IOBP Admin API 
@@ -143,6 +142,8 @@ The `merchantId` will be generated after the next step.
 ### Register your Merchant
 
 You need to register your merchant with the IBM Open Banking Platform (IOBP) because IOBP redirects the final result of the payment back to the merchant application. Use the Client ID and Client Secret of the IBM Open Banking Administration API (1.1.0) to set respectively the headers x-ibm-client-id and x-ibm-client-secret.
+
+Also, in the `--data` payload of the request, change the `name` to your merchant name.
 
 Request
 ```
