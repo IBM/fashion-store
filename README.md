@@ -1,3 +1,7 @@
+# WARNING: This repository is no longer maintained :warning:
+
+> This repository will not be updated. The repository will be kept available in read-only mode.
+
 # Fashion Store with IBM Open Banking Platform
 
 Imagine you are a merchant with an online store and your customers want to integrate with direct payments from banks to accommodate making purchases, securely and easily. 
